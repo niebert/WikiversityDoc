@@ -10,4 +10,4 @@ The <a href="https://niebert.github.io/WikiversityDoc/cas4wiki.html" target="_bl
 * [JSON-Editor](https://www.github.com/jdorn/json-editor) and 
 * [Plotly for Javascript](https://github.com/plotly/plotly.js)
 
-For more details of used repositories see also [README.md in js-Folder](js/README.md)
+For more details of used repositories see also [README.md in js-folder](js/README.md)
