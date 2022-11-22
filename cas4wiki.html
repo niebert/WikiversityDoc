@@ -47,7 +47,7 @@
   <script src="js/jquery.js"></script>
   <script src="js/jsoneditor.min.js"></script>
   <script>
-  var editor;
+  var vEditor;
   var ced;
 	var vDataJSON = {
     "tpl":{},
@@ -71,17 +71,44 @@
     JSONEditor.defaults.iconlib = 'icons4menu';
 
     //--- Handlebars4Code: see https://www.github.com/niebert/HandleBars4Code ---
-
+    var ced;
     var vLinkParam = new LinkParam();
     vLinkParam.init(document);
 
     function load_cas_demo() {
-      if (editor && editor.setValue) {
-        editor.setValue(vDataJSON.db['initdb']);
+      if (vEditor && vEditor.setValue) {
+        vEditor.setValue(vDataJSON.db['initdb']);
       } else {
-        console.warn("JSON editor 'editor' is not defined - setValue-call failed");
+        console.warn("JSON editor 'vEditor' is not defined - setValue-call failed");
       }
       app.nav.page('edit')
+    }
+
+    function loadJSON2HDD() {
+      /*
+      var ed = vEditor;
+      if (vEditor) {
+        alert("BEFORE vEditor exists");
+      } else {
+        alert("BEFORE vEditor is missing");
+      };
+      */
+      vEditor.loadJSON();
+      app.nav.page('edit');
+      /*
+      if (vEditor) {
+        alert("AFTER vEditor exists");
+        if (vEditor.getEditor) {
+          alert("AFTER vEditor.getEditor() exists");
+        } else {
+          alert("AFTER vEditor.getEditor() is missing");
+        }
+      } else {
+        alert("AFTER vEditor is missing");
+      };
+      //window.vEditor = vEditor;
+      //return false;
+      */
     }
 
     function saveFile2HDD(pFilename,pContent) {
@@ -90,7 +117,7 @@
     }
 
     function saveJSON2HDD() {
-      var vJSON = editor.getValue();
+      var vJSON = vEditor.getValue();
       if (vJSON) {
         var vContent = JSON.stringify(vJSON,null,4);
         var vFilename = el("jsonfile").value;
@@ -100,17 +127,17 @@
 
     function get_cas_editors() {
       if (ced) {
-        //alert("ced exists!");
+        alert("ced exists!");
         return ced
       } else {
-        if (editor && editor.getEditor) {
+        if (vEditor && vEditor.getEditor) {
           return {
-            "commands": editor.getEditor('root.commands'),
-            "casfunctions": editor.getEditor('root.casfunctions'),
-            "casvariables":  editor.getEditor('root.casvariables')
+            "commands": vEditor.getEditor('root.commands'),
+            "casfunctions": vEditor.getEditor('root.casfunctions'),
+            "casvariables":  vEditor.getEditor('root.casvariables')
           }
         } else {
-          alert("JSON editor 'editor' is not defined - getEditor failed");
+          alert("JSON editor 'vEditor' is not defined - getEditor failed");
           return null;
         }
       }
@@ -212,13 +239,13 @@
     function createURL4JSON(pServerID,pID) {
       var vNode = el(pID);
       var vServerNode = el(pServerID);
-      if (editor) {
+      if (vEditor) {
           vLinkParam.setValue("filename",el('jsonfile').value);
           //vLinkParam.setValue("title",el('tTitle4CAS').value);
           vLinkParam.deleteValue("title");
           vLinkParam.setValue("title",el('tTitle4CAS').value);
-          //vLinkParam.setValue("title",editor.getTitle());
-          var vJSON = editor.getValue();
+          //vLinkParam.setValue("title",vEditor.getTitle());
+          var vJSON = vEditor.getValue();
           var value = JSON.stringify(vJSON);
           if (value) {
             if (vLinkParam ) {
@@ -243,9 +270,10 @@
 
 
 </head>
-
-<body onload="">
-
+<!--
+<body onload="lf4d.create()">
+-->
+<body>
     <div class="wrapper">
         <nav class="site-nav">
             <h1 class="menu-logo">CAS4Web <span><div id4marker="version" style="display: inline-block">1.1.9</div></span></h1>
@@ -264,7 +292,7 @@
                 <!-- Menu Item 'Delete' - type: page - visibility: visible -->
                 <li><a href="#!" onclick="app.nav.page('delete')"><img class="menu-icon" src="img/icons-svg/fa-trash-white.svg"><div class="nav-text site-nav--icon">Delete</div></a></li>
                 <!-- Menu Item 'Print' - type: page - visibility: visible -->
-                <li><a href="#!" onclick="el('app_editor').value=JSON.stringify(editor.getValue(),null,4);app.nav.page('print')"><img class="menu-icon" src="img/icons-svg/fa-print-white.svg"><div class="nav-text site-nav--icon">Print</div></a></li>
+                <li><a href="#!" onclick="el('app_editor').value=JSON.stringify(vEditor.getValue(),null,4);app.nav.page('print')"><img class="menu-icon" src="img/icons-svg/fa-print-white.svg"><div class="nav-text site-nav--icon">Print</div></a></li>
                 <!-- Menu Item 'Settings' - type: page - visibility: visible -->
                 <li><a href="#!" onclick="app.nav.page('settings')"><img class="menu-icon" src="img/icons-svg/gear-white.svg"><div class="nav-text site-nav--icon">Settings</div></a></li>
                 <!-- Menu Item 'About' - type: page - visibility: visible -->
@@ -276,8 +304,10 @@
       <div class="pages-app" data-role="page" id="load">
         <h2>Load</h2>
 			    <!-- place content of the page here CALL: lf4d.open_dialog('mytxtfile') -->
-        <button id="bJSONLoad" class="btn4menu" onclick="editor.loadJSON();return false">
-          <img src="img/icons-svg/fa-folder-open-white.svg">
+
+        <button id="bJSONLoad" class="btn4menu" onclick="loadJSON2HDD();return false">
+        <!-- <button id="bJSONLoad" class="btn4menu" onclick="lf4d.open_dialog('mytxtfile');return false"> -->
+            <img src="img/icons-svg/fa-folder-open-white.svg">
           Load JSON
        </button>
        <ul>
@@ -473,7 +503,7 @@
             <img src="img/icons-svg/fa-globe-white.svg">
             Download CAS4Web ZIP
           </button>
-          -  The CAS4Web can be downloaded as ZIP - The WebApp is based on:
+          -  The <a href="https://www.github.com/niebert/WikiversityDoc" target="_blank">CAS4Web</a> can be downloaded as ZIP - The WebApp is based on:
           <ul>
             <li>
               <a href="https://github.com/davidedc/Algebrite" target="_blank">Algebrite - Computer Algebra</a>
@@ -505,14 +535,22 @@
       <div class="pages-app" data-role="page" id="about">
         <h2>About</h2>
 			    <h3>
-			       CAS4WebApp - JSON-Editor <div id4marker="version" style="display: inline-block">1.1.9</div>
+			       <a href="https://www.github.com/niebert/WikiversityDoc" target="_blank">CAS4WebApp</a> - JSON-Editor <div id4marker="version" style="display: inline-block">1.1.9</div>
 			    </h3>
 			    <h4>
-			       AppLSAC - Computer Algebra System
+			       <a href="https://www.github.com/niebert/WikiversityDoc" target="_blank">AppLSAC - Computer Algebra System</a>
 			    </h4>
 
-			    This is a JSON editor with Load, Save and Print features running completely in the browser without submission of loaded data to remote servers.
+			    This is a <a href="https://github.com/niebert/WikiversityDoc/archive/refs/heads/main.zip" target="_blank">CAS4Wiki-JSON editor</a> with Load, Save and Print features running completely in the browser without submission of loaded data to remote servers.
           <ul>
+            <li>
+              <a href="https://www.algebrite.org" target="_blank"><b>Algebrite</b></a> The <a href="https://github.com/niebert/WikiversityDoc" target="_blank">CAS4Wiki JSON-Editor</a> uses <a href="https://www.algebrite.org" target="_blank">Algebrite</a> as web-based Computer Algebra System (CAS).
+              CAS4Wiki layout for input is configured by a JSON Schema W to generate tailored JSON
+            </li>
+            <li>
+              <a href="https://github.com/plotly/plotly.js" target="_blank"><b>Plotly - Graphs</b></a> The <a href="https://github.com/niebert/WikiversityDoc" target="_blank">CAS4Wiki JSON-Editor</a> uses <a href="https://github.com/plotly/plotly.js" target="_blank">Plotly - Javascript</a> for plotting 2D and 3D Graphs and Traces of functions.
+              CAS4Wiki layout for input is configured by a JSON Schema W to generate tailored JSON
+            </li>
             <li>
               <a href="https://www.github.com/niebert/jsoneditor_app" target="_blank"><b>JSON-Editor App</b> </a> The <a href="https://github.com/json-editor/json-editor" target="_blank">underlying JSON-Editor</a> was used for this repository  <a href="https://www.github.com/niebert/jsoneditor_app" target="_blank">jsoneditor_app on GitHub</a>.
               Editor layout for input is configured by a JSON Schema W to generate tailored JSON
@@ -534,8 +572,8 @@
           <hr>
           <center>
             <font size="-1">
-              <b><a href="https://github.com/niebert/jsoneditor_app/archive/master.zip">jsoneditor_app</a></b>  is an <a href="https://en.wikiversity.org/wiki/AppLSAC" target="_blank">AppLSAC</a><br>
-              <a href="https://github.com/niebert/jsoneditor_app" target="_blank">GitHub Repository with <kbd>jsoneditor_app</kbd></a>
+              <b><a href="https://github.com/niebert/WikiversityDoc/archive/refs/heads/main.zip">CAS4Wiki App</a></b>  is an <a href="https://en.wikiversity.org/wiki/AppLSAC" target="_blank">AppLSAC</a><br>
+              <a href="https://github.com/niebert/WikiversityDoc" target="_blank">GitHub Repository with <kbd>CAS4Wiki App</kbd></a>
               <br> Repository uses  <a href="https://www.github.com/json-editor/json-editor" target="_blank">JSON-Editor</a>, <a href="https://github.com/niebert/loadfile4dom" target="_blank">LoadFile4DOM</a>, <a href="https://github.com/eligrey/FileSaver.js/" target="_blank">FileSaver</a> and <a href="https://github.com/niebert/icons4menu/" target="_blank">Icons4Menu</a><br>
               <a href="https://niehausbert.gitlab.com/JSON2Schema" target="_blank">Create your own jsoneditor_app with JSON2Schema</a><br>
               Created 2022/09/24 10:31:12<br>last modified <div id4marker="datetime" style="display: inline-block">2022/11/11 7:50:37</div> - Version <div id4marker="version" style="display: inline-block">1.1.9</div>
@@ -591,7 +629,7 @@
        //alert("starting_value="+JSON.stringify(starting_value,null,2));
 
        // Initialize the editor
-        var editor = new JSONEditor(document.getElementById('editor_holder'),{
+        vEditor = new JSONEditor(document.getElementById('editor_holder'),{
         // Enable fetching schemas via ajax
         ajax: true,
 
@@ -613,10 +651,10 @@
 
       // Hook up the validation indicator to update its
       // status whenever the editor changes
-      editor.on('change',function() {
+      vEditor.on('change',function() {
         // Get an array of errors from the validator
-        if (editor && editor.validate) {
-          var errors = editor.validate();
+        if (vEditor && vEditor.validate) {
+          var errors = vEditor.validate();
 
           var indicator = document.getElementById('valid_indicator');
 
@@ -631,7 +669,7 @@
             indicator.textContent = "valid";
           }
         } else {
-          console.warn("editor is not defined");
+          console.warn("vEditor is not defined");
         }
       });
     </script>
