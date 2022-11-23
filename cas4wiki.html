@@ -8,7 +8,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="jsoneditor4menu" content="https://niehausbert.gitlab.io/jsoneditor4menu">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CAS4Web - WebApp</title>
+  <title>CAS4Wiki - 1.1.17</title>
   <link href="css/bootstrap-brown.css" rel="stylesheet">
 <!-- generated CSS files by jsoneditor4menu -->
 <!--
@@ -232,13 +232,14 @@
     }
 
     function downloadCAS4Web() {
-      window.open("https://github.com/niebert/PanDoc/archive/refs/heads/master.zip");
+      window.open("https://github.com/niebert/WikiversityDoc/archive/refs/heads/master.zip");
     }
 
 
-    function createURL4JSON(pServerID,pID) {
+    function createURL4JSON(pServerID,pID,pJSONID) {
       var vNode = el(pID);
       var vServerNode = el(pServerID);
+      var vJSONNode = el(pJSONID);
       if (vEditor) {
           vLinkParam.setValue("filename",el('jsonfile').value);
           //vLinkParam.setValue("title",el('tTitle4CAS').value);
@@ -247,14 +248,20 @@
           //vLinkParam.setValue("title",vEditor.getTitle());
           var vJSON = vEditor.getValue();
           var value = JSON.stringify(vJSON);
+          var value4out = JSON.stringify(vJSON,null,2);
+          if (value4out && vJSONNode) {
+            vJSONNode.value = value4out
+          }
           if (value) {
             if (vLinkParam ) {
               //alert("Test Create JSON")
               vLinkParam.setValue("casdata",value);
               var vLink = vLinkParam.getParam4URL();
-              alert("vLink='"+vLink+"'");
+              //alert("vLink='"+vLink+"'");
               //vLink = vLinkParam.getLink4URL();
-              vNode.value = vServerNode.value + vLink;
+              if (vServerNode) {
+                vNode.value = vServerNode.value + vLink;
+              }
             } else {
               console.error("vLinkParam is not defined");
             }
@@ -276,7 +283,7 @@
 <body>
     <div class="wrapper">
         <nav class="site-nav">
-            <h1 class="menu-logo">CAS4Web <span><div id4marker="version" style="display: inline-block">1.1.9</div></span></h1>
+            <h1 class="menu-logo">CAS4Wiki <span><div id4marker="version" style="display: inline-block">1.1.17</div></span></h1>
 
             <div class="menu-toggle">
               <div class="hamburger"></div>
@@ -482,8 +489,8 @@
               <b>CAS4Web:</b>
             </td>
             <td>
-              <input type='text' id='tCAS4WebURL' value='file:///home/niehausmx/Nextcloud/Javascript/WebApp/webapp4zip/cas4web_app/index.html' style="width:70%">
-              <button id='bCreateURL4CAS' class="btn4menu" onclick="createURL4JSON('tCAS4WebURL','tURL4CMD');return false;">
+              <input type='text' id='tCAS4WebURL' value='https://niebert.github.io/WikiversityDoc/cas4wiki.html' style="width:70%">
+              <button id='bCreateURL4CAS' class="btn4menu" onclick="createURL4JSON('tCAS4WebURL','tURL4CMD','tJSON4CMD');return false;">
                 <img src="img/icons-svg/fa-globe-white.svg">
                 Create URL
               </button>
@@ -497,8 +504,17 @@
               <input type='text' id='tURL4CMD' value='' style="width:100%">
               </td>
           </tr>
+          <tr>
+            <td valign="top">
+              <b>JSON for URL:</b>
+            </td>
+            <td>
+              <textarea rows="8" id='tJSON4CMD' value='' style="width:100%">
+              </textarea>
+              </td>
+          </tr>
           </table>
-          <hr width="3px">
+          <hr>
           <button id='bDownloadCAS' class="btn4menu" onclick="downloadCAS4Web()">
             <img src="img/icons-svg/fa-globe-white.svg">
             Download CAS4Web ZIP
@@ -535,7 +551,7 @@
       <div class="pages-app" data-role="page" id="about">
         <h2>About</h2>
 			    <h3>
-			       <a href="https://www.github.com/niebert/WikiversityDoc" target="_blank">CAS4WebApp</a> - JSON-Editor <div id4marker="version" style="display: inline-block">1.1.9</div>
+			       <a href="https://www.github.com/niebert/WikiversityDoc" target="_blank">CAS4WebApp</a> - JSON-Editor <div id4marker="version" style="display: inline-block">1.1.17</div>
 			    </h3>
 			    <h4>
 			       <a href="https://www.github.com/niebert/WikiversityDoc" target="_blank">AppLSAC - Computer Algebra System</a>
@@ -576,7 +592,7 @@
               <a href="https://github.com/niebert/WikiversityDoc" target="_blank">GitHub Repository with <kbd>CAS4Wiki App</kbd></a>
               <br> Repository uses  <a href="https://www.github.com/json-editor/json-editor" target="_blank">JSON-Editor</a>, <a href="https://github.com/niebert/loadfile4dom" target="_blank">LoadFile4DOM</a>, <a href="https://github.com/eligrey/FileSaver.js/" target="_blank">FileSaver</a> and <a href="https://github.com/niebert/icons4menu/" target="_blank">Icons4Menu</a><br>
               <a href="https://niehausbert.gitlab.com/JSON2Schema" target="_blank">Create your own jsoneditor_app with JSON2Schema</a><br>
-              Created 2022/09/24 10:31:12<br>last modified <div id4marker="datetime" style="display: inline-block">2022/11/11 7:50:37</div> - Version <div id4marker="version" style="display: inline-block">1.1.9</div>
+              Created 2022/09/24 10:31:12<br>last modified <div id4marker="datetime" style="display: inline-block">2022/11/23 9:39:10</div> - Version <div id4marker="version" style="display: inline-block">1.1.17</div>
             </font>
           </center>
       </div>
