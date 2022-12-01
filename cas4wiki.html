@@ -4,12 +4,12 @@
 
   <meta charset="UTF-8">
   <!-- HTML File Content WebApp - generated 2022/07/27 11:13:14 -->
+  <link href="css/bootstrap-brown.css" rel="stylesheet">
 
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="jsoneditor4menu" content="https://niehausbert.gitlab.io/jsoneditor4menu">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CAS4Wiki - 1.1.17</title>
-  <link href="css/bootstrap-brown.css" rel="stylesheet">
+  <title>CAS4Wiki - 1.1.21</title>
 <!-- generated CSS files by jsoneditor4menu -->
 <!--
   <Xlink href="css/main.css" rel="stylesheet">
@@ -132,6 +132,10 @@
       } else {
         if (vEditor && vEditor.getEditor) {
           return {
+            "title4cas": vEditor.getEditor('root.title4cas'),
+            "title4commands": vEditor.getEditor('root.title4commands'),
+            "title4functions": vEditor.getEditor('root.title4functions'),
+            "title4variables": vEditor.getEditor('root.title4variables'),
             "commands": vEditor.getEditor('root.commands'),
             "casfunctions": vEditor.getEditor('root.casfunctions'),
             "casvariables":  vEditor.getEditor('root.casvariables')
@@ -142,6 +146,48 @@
         }
       }
     }
+    function getMap2DOM() {
+      return {
+        "title4cas": document.getElementById('btTitle4CAS'),
+        "title4commands": document.getElementById('btTitle4Commands'),
+        "title4functions": document.getElementById('btTitle4Functions'),
+        "title4variables": document.getElementById('btTitle4Variables')
+      }
+    }
+
+    function getInput2DOM() {
+      return {
+        "title4cas": document.getElementById('tTitle4CAS'),
+        "title4commands": document.getElementById('tTitle4Commands'),
+        "title4functions": document.getElementById('tTitle4Functions'),
+        "title4variables": document.getElementById('tTitle4Variables')
+      }
+    }
+
+    function setValue4Settings(id4editor,val) {
+      var input2dom = getInput2DOM();
+      if (input2dom[id4editor]) {
+        input2dom[id4editor].value = val;
+      }
+      setButtons4Editor(id4editor,val);
+    }
+
+    function setButtons4Editor(id4editor,val) {
+      var map2dom = getMap2DOM();
+      if (map2dom[id4editor]) {
+        map2dom[id4editor].innerHTML = "";
+        var textNode = document.createTextNode(val);
+        map2dom[id4editor].appendChild(textNode);
+      }
+
+    }
+    function setLabel4Editor(id4editor,val) {
+      var ced = get_cas_editors();
+      if (ced[id4editor]) {
+        ced[id4editor].setValue(val);
+      }
+      setButtons4Editor(id4editor,val);
+    };
 
     function hide_all () {
        var ced = get_cas_editors();
@@ -197,6 +243,17 @@
         },
 
       ]);
+      show_commands();
+      app.nav.page('edit')
+    }
+
+    function delete_results() {
+      var ced = get_cas_editors();
+      var cmd_arr = ced.commands.getValue();
+      for (var i = 0; i < cmd_arr.length; i++) {
+        cmd_arr[i].result4cmd = " ";
+      }
+      ced.commands.setValue(cmd_arr);
       show_commands();
       app.nav.page('edit')
     }
@@ -283,7 +340,7 @@
 <body>
     <div class="wrapper">
         <nav class="site-nav">
-            <h1 class="menu-logo">CAS4Wiki <span><div id4marker="version" style="display: inline-block">1.1.17</div></span></h1>
+            <h1 class="menu-logo">CAS4Wiki <span><div id4marker="version" style="display: inline-block">1.1.21</div></span></h1>
 
             <div class="menu-toggle">
               <div class="hamburger"></div>
@@ -338,6 +395,7 @@
 			    var vContent = document.getElementById('app_editor').value;
 			    saveFile2HDD(vFilename,vContent)
 			    -->
+      <h3 id="btTitle4CAS">CAS4Wiki</h3>
       <button id='bSave4JSON' class="btn4menu" onclick="saveJSON2HDD();return false">
         <img src="img/icons-svg/fa-file-save-white.svg">
         Save JSON
@@ -361,15 +419,15 @@
         <h2>Edit -
           <button id='bShowCommands'  class="btn4menu" onclick="show_commands()">
             <img src="img/icons-svg/gear-white.svg">
-            Commands
+            <span id="btTitle4Commands">Commands</span>
           </button>
           <button id='bShowFunctions'  class="btn4menu" onclick="show_functions()">
             <img src="img/icons-svg/gear-white.svg">
-            Functions
+            <span id="btTitle4">Functions</span>
           </button>
           <button id='bShowVariables'  class="btn4menu" onclick="show_variables()">
             <img src="img/icons-svg/gear-white.svg">
-            Variables
+            <span id="btTitle4">Variables</span>
           </button>
         </h2>
 			    <center>
@@ -388,31 +446,41 @@
         <h2>Delete</h2>
 			    <!-- This is the page content of the menu item 'Delete' of type 'page' -->
 			    <!-- <input type='button' value='Clear Content' onclick="document.getElementById('app_editor').value='';app.nav.page('edit');"> -->
-          <button  id="bButtonDelete" class="btn4menu" onclick="document.getElementById('app_editor').value='';delete_cas();return false">
+          <button  id="bButtonDelete" class="btn4menu" onclick="document.getElementById('app_editor').value='';delete_cas();return false" style="min-width: 35%;text-align:left">
             <img class="menu-icon" src="img/icons-svg/fa-trash-white.svg">
-            Clear Content
+            Clear CAS Content
           </button>
-          <!--
           <ul>
             <li>
-              <button id='bShowCommands'  class="btn4menu" onclick="delete_commands();return false">
+              <button id='bDeleteResults'  class="btn4menu" onclick="delete_results();return false" style="min-width: 35%;text-align:left">
+                <img  class="menu-icon" src="img/icons-svg/fa-trash-white.svg">
+                Results
+              </button>  &nbsp; Clear all Results
+            </li>
+            <li>
+              <button id='bDeleteCommands'  class="btn4menu" onclick="delete_commands();return false" style="min-width: 35%;text-align:left">
                 <img class="menu-icon" src="img/icons-svg/fa-trash-white.svg">
                 Commands
               </button>
+                &nbsp; Clear all commands and insert a demo command
           </li>
             <li>
-              <button id='bShowFunctions'  class="btn4menu" onclick="delete_functions();return false">
+              <button id='bDeleteFunctions'  class="btn4menu" onclick="delete_functions();return false" style="min-width: 35%;text-align:left">
                 <img class="menu-icon" src="img/icons-svg/fa-trash-white.svg">
                 Functions
               </button>
+                &nbsp;  delete all definition of functions
             </li>
             <li>
-              <button id='bShowVariables'  class="btn4menu" onclick="delete_variables();return false">
+              <button id='bDeleteVariables'  class="btn4menu" onclick="delete_variables();return false" style="min-width: 35%;text-align:left">
                 <img  class="menu-icon" src="img/icons-svg/fa-trash-white.svg">
                 Variables
               </button>
+                &nbsp;
+                Delete all definitions of variables
             </li>
           </ul>
+          <!--
         -->
           <center>
             <font size="-1">
@@ -457,7 +525,8 @@
         <!-- This is the page content of the menu item 'Print' of type 'page' -->
           <h3>Print File</h3>
           <!-- <button class="btn4menu" onclick="previewTextArea('app_editor');return false">Print Preview</button> -->
-          <button class="btn4menu" onclick="app.evt.show_json();printTextArea('app_editor');return false">Print</button>
+          <button class="btn4menu" onclick="document.getElementById('app_editor').value=JSON.stringify(vEditor.getValue(),null,4);printTextArea('app_editor');return false">Print JSON</button> &nbsp;
+          <button class="btn4menu" onclick="app.evt.show_json();printTextArea('app_editor');return false">Print Commands</button>
           <hr>
           <div style="float:center;width:90%;">
             <textarea id="app_editor" style="width:100%;height:100%" rows="20" ></textarea>
@@ -481,7 +550,7 @@
                 <b>Title: </b>
               </td>
               <td>
-                <input type='text' id='tTitle4CAS' value='CAS Demo' style="width:30%" onchange="editor.setTitle(this.value);vLinkParam.setValue('title',this.value);return false">
+                <input type='text' id='tTitle4CAS' value='CAS Demo' style="width:30%" onchange="setLabel4Editor('title4cas',this.value);return false">
               </td>
             </tr>
           <tr>
@@ -532,6 +601,34 @@
             </li>
           </ul>
           <hr>
+          <h3>Language Settings</h3>
+  			    <table style="width:70%">
+            <tr>
+              <td  style="width:30%">
+                <b>Title Commands: </b>
+              </td>
+              <td>
+                <input type='text' id='tTitle4Commands' value='Commands' style="width:100%" onchange="setLabel4Editor('title4commands',this.value);return false">
+              </td>
+            </tr>
+            <tr>
+              <td style="width:30%">
+                <b>Title Functions: </b>
+              </td>
+              <td>
+                <input type='text' id='tTitle4Functions' value='Functions' style="width:100%" onchange="setLabel4Editor('title4functions',this.value);return false">
+              </td>
+            </tr>
+            <tr>
+              <td style="width:30%">
+                <b>Title Variables: </b>
+              </td>
+              <td>
+                <input type='text' id='tTitle4Variables' value='Variables' style="width:100%" onchange="setLabel4Editor('title4variables',this.value);return false">
+              </td>
+            </tr>
+
+          </table>
           <div style="display:none">
             <button id='bExportSchemaJSON' class="btn4menu">
               <img src="img/icons-svg/fa-file-save-white.svg">
@@ -551,7 +648,7 @@
       <div class="pages-app" data-role="page" id="about">
         <h2>About</h2>
 			    <h3>
-			       <a href="https://www.github.com/niebert/WikiversityDoc" target="_blank">CAS4WebApp</a> - JSON-Editor <div id4marker="version" style="display: inline-block">1.1.17</div>
+			       <a href="https://en.wikiversity.org/wiki/CAS4Wiki" target="_blank">CAS4Wiki</a> - JSON-Editor <div id4marker="version" style="display: inline-block">1.1.21</div>
 			    </h3>
 			    <h4>
 			       <a href="https://www.github.com/niebert/WikiversityDoc" target="_blank">AppLSAC - Computer Algebra System</a>
@@ -560,7 +657,7 @@
 			    This is a <a href="https://github.com/niebert/WikiversityDoc/archive/refs/heads/main.zip" target="_blank">CAS4Wiki-JSON editor</a> with Load, Save and Print features running completely in the browser without submission of loaded data to remote servers.
           <ul>
             <li>
-              <a href="https://www.algebrite.org" target="_blank"><b>Algebrite</b></a> The <a href="https://github.com/niebert/WikiversityDoc" target="_blank">CAS4Wiki JSON-Editor</a> uses <a href="https://www.algebrite.org" target="_blank">Algebrite</a> as web-based Computer Algebra System (CAS).
+              <a href="https://github.com/davidedc/Algebrite" target="_blank"><b>Algebrite</b></a> The <a href="https://github.com/niebert/WikiversityDoc" target="_blank">CAS4Wiki JSON-Editor</a> uses <a href="https://www.algebrite.org" target="_blank">Algebrite</a> as web-based Computer Algebra System (CAS).
               CAS4Wiki layout for input is configured by a JSON Schema W to generate tailored JSON
             </li>
             <li>
@@ -592,7 +689,7 @@
               <a href="https://github.com/niebert/WikiversityDoc" target="_blank">GitHub Repository with <kbd>CAS4Wiki App</kbd></a>
               <br> Repository uses  <a href="https://www.github.com/json-editor/json-editor" target="_blank">JSON-Editor</a>, <a href="https://github.com/niebert/loadfile4dom" target="_blank">LoadFile4DOM</a>, <a href="https://github.com/eligrey/FileSaver.js/" target="_blank">FileSaver</a> and <a href="https://github.com/niebert/icons4menu/" target="_blank">Icons4Menu</a><br>
               <a href="https://niehausbert.gitlab.com/JSON2Schema" target="_blank">Create your own jsoneditor_app with JSON2Schema</a><br>
-              Created 2022/09/24 10:31:12<br>last modified <div id4marker="datetime" style="display: inline-block">2022/11/23 9:39:10</div> - Version <div id4marker="version" style="display: inline-block">1.1.17</div>
+              Created 2022/09/24 10:31:12<br>last modified <div id4marker="datetime" style="display: inline-block">2022/12/01 15:45:43</div> - Version <div id4marker="version" style="display: inline-block">1.1.21</div>
             </font>
           </center>
       </div>
@@ -606,7 +703,7 @@
        //---------------------------------------
        //------READ LINKPARAMETER---------------
        //---------------------------------------
-
+       var vID4AppLSAC = "CAS4Wiki8910381309";
        //------ TiTLE --------------------------
        if (vLinkParam.exists("title")) {
          // e.g. index.html?title=Normen,_Metriken,_Topologie
@@ -627,6 +724,27 @@
                  vJSON = null; // Init with an empty class
                  console.error("ERROR: LinkParam - onload JSON with errors - "+err); // error in the above string (in this case, yes)!
                  // call onload handler with a ppopulated error err,
+          }
+          if (vJSON) {
+            //alert("JSON defined ="+JSON.stringify(vJSON,null,4));
+            starting_value = vJSON;
+          } else {
+            //alert("JSON undefined");
+            starting_value = vDataJSON.db.initdb;
+          }
+       } else {
+         if (window.localStorage && localStorage && localStorage[vID4AppLSAC]) {
+           var vJSONstring = localStorage.getItem(vID4AppLSAC);
+           var vJSON = null;
+               // Parse JSON and check if syntax is valid.
+               // console.log("handle_json() Loaded File:\n"+vFile);
+            try {
+                   vJSON = JSON.parse(vJSONstring);
+            } catch (err) {
+                   vJSON = null; // Init with an empty class
+                   console.error("ERROR: LocalStorage - getValue JSON with errors - "+err); // error in the above string (in this case, yes)!
+                   // call onload handler with a ppopulated error err,
+            }
           }
           if (vJSON) {
             //alert("JSON defined ="+JSON.stringify(vJSON,null,4));
@@ -668,9 +786,15 @@
       // Hook up the validation indicator to update its
       // status whenever the editor changes
       vEditor.on('change',function() {
+        if (vEditor && vEditor.getValue) {
+          if (window.localStorage) {
+            localStorage.setItem(vID4AppLSAC,JSON.stringify(vEditor.getValue()));
+          }
+        }
         // Get an array of errors from the validator
+        /*
         if (vEditor && vEditor.validate) {
-          var errors = vEditor.validate();
+        var errors = vEditor.validate();
 
           var indicator = document.getElementById('valid_indicator');
 
@@ -687,6 +811,7 @@
         } else {
           console.warn("vEditor is not defined");
         }
+        */
       });
     </script>
 
@@ -710,6 +835,12 @@
   <script>
       // Store Template from vDataJSON into textarea
       //el("tTemplate").value = vDataJSON.tpl.template4json;
+      var vJSON = vEditor.getValue();
+      setValue4Settings('title4cas',vJSON.title4cas);
+      setValue4Settings('title4commands',vJSON.title4commands);
+      setValue4Settings('title4functions',vJSON.title4functions);
+      setValue4Settings('title4variables',vJSON.title4variables);
+      show_commands();
   </script>
 
 </body>
