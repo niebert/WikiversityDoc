@@ -143,7 +143,7 @@ vDataJSON.db['initdb'] = {
         },
         {
             "cmdtitle": "Calculations in exponential domain",
-            "cmd": "#calculating in an exponential domain\nf=sin(t)^4-2*cos(t/2)^3*sin(t)\nf=circexp(f)\ndefint(f,t,0,2*pi)",
+            "cmd": "#calculating in an exponential domain\nf_1=sin(t)^4-2*cos(t/2)^3*sin(t)\nf_1=circexp(f_1)\ndefint(f_1,t,0,2*pi)",
             "result4cmd": ""
         }
     ],
