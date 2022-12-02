@@ -17,17 +17,17 @@ vDataJSON.db['initdb'] = {
             "result4cmd": "f(4)"
         },
         {
-            "cmdtitle": "Plot plot2d(f(x)",
+            "cmdtitle": "Plot2D f(x)",
             "cmd": "f(x):=x^2-1\nplot2d(f(x),x[-5,5])",
             "result4cmd": "PLOT2D f(x)"
         },
         {
-            "cmdtitle": "Plot plot2d(h(x)",
+            "cmdtitle": "Plot2D h(x)",
             "cmd": "h(x):=10*sin(x)\nplot2d(h(x),x[-5,5])",
             "result4cmd": "PLOT2D h(x)"
         },
         {
-            "cmdtitle": "Plot plot2d(f(x),h(x))",
+            "cmdtitle": "Plot2D f(x),h(x)",
             "cmd": "plot2d(f(x),h(x),x[-5,5])",
             "result4cmd": "PLOT2D"
         },
@@ -37,32 +37,32 @@ vDataJSON.db['initdb'] = {
             "result4cmd": "g(x,y):=cos(x)+sin(y)"
         },
         {
-            "cmdtitle": "Plot plot3d(g(x,y)",
+            "cmdtitle": "Plot3D g(x,y)",
             "cmd": "plot3d(g(x,y),x[-5,5],y[-4,6])",
             "result4cmd": "PLOT3D"
         },
         {
-            "cmdtitle": "Plot curve2d() - Spiral",
+            "cmdtitle": "Plot2D - Spiral",
             "cmd": "curve2d([t*cos(t),t*sin(t)],t[0,16],color[green],linewidth[3])",
             "result4cmd": "CURVE2D"
         },
         {
-            "cmdtitle": "Plot curve3d() - cur(t)",
-            "cmd": "curve3d(K(t),t[0,1],color[blue],linewidth[18])",
+            "cmdtitle": "Convex Combination Ord3 - K(t)",
+            "cmd": "curve3d(K(t),t[0,1],color[blue],linewidth[10])",
             "result4cmd": "curve3d: K(t)=[3,4,5]* (1-t)^3 +[5,4,-3]*3*(1-t)^2*t+ [-6,-6,6]*3*(1-t)*t^2 +[-3,-7,0]*t^3   \\quad "
         },
         {
-            "cmdtitle": "Plot curve3d() with term",
+            "cmdtitle": "Plot3D double helix",
             "cmd": "curve3d([cos(t),sin(t),t],[sin(t),cos(t),t],t[0,15],color[#78AC54])",
             "result4cmd": "PLOT3D"
         },
         {
-            "cmdtitle": "Expand Function g(3,4):=(5)^2+(4)^2",
+            "cmdtitle": "Evaluate Function g(3,4)",
             "cmd": "g(3,4)",
             "result4cmd": "\\mbox{expand to }3^2+4^2 \\mbox{ compute solution.}"
         },
         {
-            "cmdtitle": "Expand nested Function g(f(5),b):=(5^2)^2+b^2",
+            "cmdtitle": "Expand nested Function g(f(5),b)",
             "cmd": "g(f(5),b)",
             "result4cmd": "\\mbox{expand to }5^2\\mbox{ compute solution.}"
         },
@@ -85,11 +85,6 @@ vDataJSON.db['initdb'] = {
             "cmdtitle": "Faculty 11! with comments",
             "cmd": "11! # gets long after 50000!",
             "result4cmd": ""
-        },
-        {
-            "cmdtitle": "Evaluate/Expand Function f(5):=5^2",
-            "cmd": "f(5)",
-            "result4cmd": "\\mbox{expand to }5^2\\mbox{ compute solution.}"
         },
         {
             "cmdtitle": "factorize 100!",
