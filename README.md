@@ -6,8 +6,11 @@ See also <a href="https://en.wikiversity.org/wiki/CAS4Wiki" target="_blank">Wiki
 ## CAS4Wiki - Webbased Computer Algebra System 
 The <a href="https://niebert.github.io/WikiversityDoc/cas4wiki.html" target="_blank">CAS4Wiki Demo</a> is based on
 
-* [Algebrite](https://algebrite.org) by Davide Della Casa, 
-* [JSON-Editor](https://www.github.com/jdorn/json-editor) by Jeremy Dorn and 
-* [Plotly for Javascript](https://github.com/plotly/plotly.js) see [list of contributors](https://github.com/plotly/plotly.js/graphs/contributors)
+* **[Algebrite](https://algebrite.org)** by Davide Della Casa, 
+* **[Mathematical Expression Evaluator](https://github.com/silentmatt/expr-eval)** by Matthew Crumley,
+* **[JSON-Editor](https://www.github.com/jdorn/json-editor)** by Jeremy Dorn and 
+* **[Plotly for Javascript](https://github.**com/plotly/plotly.js)** see [list of contributors](https://github.com/plotly/plotly.js/graphs/contributors)
+
+Thank you very much for sharing your code as OpenSource code and this allows to "build code on the shoulders of giants". 
 
 For more details of used repositories see also [README.md in js-folder](js/README.md)
