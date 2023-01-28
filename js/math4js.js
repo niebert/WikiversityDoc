@@ -1,17 +1,17 @@
 
 // ---------------------------------------
-// --- Math4JS ----------------------
+// --- Math4JS ---------------------------
 // ---------------------------------------
-// --- Version:   2.0.28
-// --- Date/Time: 2023/01/16 8:20:52
+// --- Version:   2.4.2
+// --- Date/Time: 2023/01/28 18:38:38
 // ---------------------------------------
-/*! math4js
+/* Package Name: math4js
  * Based on Mathematical Expression Parser by  Matthew Crumley - "silentmatt" (GitHub User Name)- https://github.com/silentmatt/expr-eval.git
  * Released under the MIT license
  *
  * Created: 2022/11/22
- * Build:   2023/01/16 8:20:52
- * Repository of current build: https://github.com/niebert/math4js
+ * Build:   2023/01/28 18:38:38
+ * Repository of current build: https://github.com/niebert/WikiversityDoc
  *
  * This repository is used for educational purpose for the Wikiversity Learning resource
  * https://en.wikiversity.org/wiki/AppLSAC
@@ -20,7 +20,7 @@
 // Configuration Code:
 // the configuration code will be used to create some constants
 
-//BEGIN - src/intro.js
+
 function Math4JS () {
   var TEOF = 'TEOF';
   var TOP = 'TOP';
@@ -31,62 +31,6 @@ function Math4JS () {
   var TCOMMA = 'TCOMMA';
   var TNAME = 'TNAME';
   var TSEMICOLON = 'TSEMICOLON';
-
-  //END - src/intro.js
-//BEGIN - src/parser.js
-// import { TEOF } from './token';
-// import { TokenStream } from './token-stream';
-// import { ParserState } from './parser-state';
-// import { Expression } from './expression';
-// import {
-//   add,
-//   sub,
-//   mul,
-//   div,
-//   mod,
-//   concat,
-//   equal,
-//   notEqual,
-//   greaterThan,
-//   lessThan,
-//   greaterThanEqual,
-//   lessThanEqual,
-//   andOperator,
-//   orOperator,
-//   inOperator,
-//   sinh,
-//   cosh,
-//   tanh,
-//   asinh,
-//   acosh,
-//   atanh,
-//   log10,
-//   neg,
-//   not,
-//   trunc,
-//   random,
-//   factorial,
-//   gamma,
-//   stringOrArrayLength,
-//   hypot,
-//   condition,
-//   roundTo,
-//   setVar,
-//   arrayIndex,
-//   max,
-//   min,
-//   arrayMap,
-//   arrayFold,
-//   arrayFilter,
-//   stringOrArrayIndexOf,
-//   arrayJoin,
-//   sign,
-//   cbrt,
-//   expm1,
-//   log1p,
-//   log2,
-//   sum
-// } from './functions';
 
 function Parser4MathJS(options) {
   this.options = options || {};
@@ -157,7 +101,7 @@ function Parser4MathJS(options) {
     min: min,
     max: max,
     hypot: Math.hypot || hypot,
-    pyt: Math.hypot || hypot, // backward compat
+    pyt: Math.hypot || hypot, 
     pow: Math.pow,
     atan2: Math.atan2,
     'if': condition,
@@ -190,28 +134,39 @@ Parser4MathJS.prototype.parse = function (expr) {
   parserState.parseExpression(instr);
   parserState.expect(TEOF, 'EOF');
 
-  return new Expression4MathJS(instr, this);
+   var tokens = new Expression4MathJS(instr, this);
+   return tokens;
+};
+
+Parser4MathJS.prototype.simplify = function (expr, variables) {
+  
+  var tokens = this.parse(expr);
+  expr = tokens.toSimplified();
+  return expr;
 };
 
 Parser4MathJS.prototype.evaluate = function (expr, variables) {
-  return this.parse(expr).evaluate(variables);
+  
+  var tokens = this.parse(expr);
+  return tokens.evaluate(variables);
 };
 
 Parser4MathJS.prototype.evaluate4array = function (expr,vname,arr4val) {
-  return this.parse(expr).evaluate4array(expr,vname,arr4val);
+  var tokens = this.parse(expr);
+  return tokens.evaluate4array(vname,arr4val);
 };
 
 Parser4MathJS.prototype.evaluate4array2d = function (expr,vname1,vname2,arr1,arr2) {
-  return this.parse(expr).evaluate4array2d(vname1,vname2,arr1,arr2);
+  var tokens = this.parse(expr);
+  
+  return tokens.evaluate4array2d(vname1,vname2,arr1,arr2);
 }
 
-Parser4MathJS.prototype.evaluate4array3d = function (expr,vname1,vname2,arr1,arr2) {
-  return this.parse(expr).evaluate4array(vname1,vname2,vname3,arr1,arr2,arr3);
+Parser4MathJS.prototype.evaluate4array3d = function (expr,vname1,vname2,vnam3,arr1,arr2,arr3) {
+  var tokens = this.parse(expr);
+  
+  return tokens.evaluate4array3d(vname1,vname2,vname3,arr1,arr2,arr3);
 }
-
-//---------------------------------------------------------
-// now the shared parser can be used with this.parse(...)
-//---------------------------------------------------------
 
 var sharedParser = new Parser4MathJS();
 
@@ -223,21 +178,17 @@ Parser4MathJS.evaluate = function (expr, variables) {
   return sharedParser.parse(expr).evaluate(variables);
 };
 
-
 Parser4MathJS.evaluate4array = function (expr,vname,arr4val) {
   return sharedParser.parse(expr).evaluate4array(expr,vname,arr4val);
 };
 
 Parser4MathJS.evaluate4array2d = function (expr,vname1,vname2,arr1,arr2) {
-  //alert("src/parser.js:197 Parser4MathJS.evaluate4array2d('"+expr+"','"+vname1+"','"+vname2+"',arr1,arr2) arr1=["+arr1.join(",")+"]  arr2=["+arr2.join(",")+"]")
   return sharedParser.parse(expr).evaluate4array2d(vname1,vname2,arr1,arr2);
 }
 
 Parser4MathJS.evaluate4array3d = function (expr,vname1,vname2,arr1,arr2) {
   return sharedParser.parse(expr).evaluate4array3d(vname1,vname2,vname3,arr1,arr2,arr3);
 }
-
-
 
 var optionNameMap = {
   '+': 'add',
@@ -274,11 +225,6 @@ Parser4MathJS.prototype.isOperatorEnabled = function (op) {
 
   return !(optionName in operators) || !!operators[optionName];
 };
-//END - src/parser.js
-//BEGIN - src/parser-state.js
-//import { TOP, TNUMBER, TSTRING, TPAREN, TBRACKET, TCOMMA, TNAME, TSEMICOLON, TEOF } from './token';
-//import { Instruction, INUMBER, IVAR, IVARNAME, IFUNCALL, IFUNDEF, IEXPR, IMEMBER, IENDSTATEMENT, IARRAY, ternaryInstruction, binaryInstruction, unaryInstruction } from './instruction';
-//import contains from './contains';
 
 function ParserState4MathJS(parser, tokenStream, options) {
   this.parser = parser;
@@ -568,6 +514,7 @@ ParserState4MathJS.prototype.parseFunctionCall = function (instr) {
         instr.push(new Instruction4MathJS(IFUNCALL, argCount));
       }
     }
+
   }
 };
 
@@ -611,9 +558,6 @@ ParserState4MathJS.prototype.parseMemberExpression = function (instr) {
     }
   }
 };
-//END - src/parser-state.js
-//BEGIN - src/simplify.js
-//import { Instruction, INUMBER, IOP1, IOP2, IOP3, IVAR, IVARNAME, IEXPR, IMEMBER, IARRAY } from './instruction';
 
 function simplify(tokens, unaryOps, binaryOps, ternaryOps, values) {
   var nstack = [];
@@ -682,9 +626,6 @@ function simplify(tokens, unaryOps, binaryOps, ternaryOps, values) {
   }
   return newexpression;
 }
-//END - src/simplify.js
-//BEGIN - src/substitute.js
-//import { Instruction, IOP1, IOP2, IOP3, IVAR, IEXPR, ternaryInstruction, binaryInstruction, unaryInstruction } from './instruction';
 
 function substitute(tokens, variable, expr) {
   var newexpression = [];
@@ -714,8 +655,6 @@ function substitute(tokens, variable, expr) {
   }
   return newexpression;
 }
-//END - src/substitute.js
-//BEGIN - src/token-stream.js
 
 function TokenStream4MathJS (parser, expression) {
   this.pos = 0;
@@ -956,7 +895,7 @@ TokenStream4MathJS.prototype.unescape = function (v) {
         buffer += '\t';
         break;
       case 'u':
-        // interpret the following 4 characters as the hex of the unicode code point
+        
         var codePoint = v.substring(index + 1, index + 5);
         if (!codePointPattern.test(codePoint)) {
           this.parseError('Illegal escape sequence: \\u' + codePoint);
@@ -1169,17 +1108,6 @@ TokenStream4MathJS.prototype.parseError = function (msg) {
   var coords = this.getCoordinates();
   throw new Error('parse error [' + coords.line + ':' + coords.column + ']: ' + msg);
 };
-//END - src/token-stream.js
-//BEGIN - src/token.js
-// var TEOF = 'TEOF';
-// var TOP = 'TOP';
-// var TNUMBER = 'TNUMBER';
-// var TSTRING = 'TSTRING';
-// var TPAREN = 'TPAREN';
-// var TBRACKET = 'TBRACKET';
-// var TCOMMA = 'TCOMMA';
-// var TNAME = 'TNAME';
-// var TSEMICOLON = 'TSEMICOLON';
 
 var Token4MathJS =  function Token(type, value, index) {
   this.type = type;
@@ -1190,14 +1118,6 @@ var Token4MathJS =  function Token(type, value, index) {
 Token4MathJS.prototype.toString = function () {
   return this.type + ': ' + this.value;
 };
-//END - src/token.js
-//BEGIN - src/expression.js
-
-//import simplify from './simplify';
-//import substitute from './substitute';
-//import evaluate from './evaluate';
-//import expressionToString from './expression-to-string';
-//import getSymbols from './get-symbols';
 
 function Expression4MathJS(tokens, parser) {
   this.tokens = tokens;
@@ -1213,12 +1133,22 @@ Expression4MathJS.prototype.simplify = function (values) {
   return new Expression(simplify(this.tokens, this.unaryOps, this.binaryOps, this.ternaryOps, values), this.parser);
 };
 
-Expression4MathJS.prototype.substitute = function (variable, expr) {
-  if (!(expr instanceof Expression)) {
-    expr = this.parser.parse(String(expr));
-  }
+Expression4MathJS.prototype.replace4values = function (values) {
+  values = values || {};
+  return expressionToString(this.tokens, "expr",values);
+};
 
-  return new Expression4MathJS(substitute(this.tokens, variable, expr), this.parser);
+Expression4MathJS.prototype.substitute = function (variable, expr) {
+  
+  if (expr) {
+    if (!(expr instanceof Expression)) {
+      expr = this.parser.parse(String(expr));
+    }
+    return new Expression4MathJS(substitute(this.tokens, variable, expr), this.parser);
+  } else {
+    console.warn("substituted expression 'expr' is missing");
+    return this;
+  }
 };
 
 Expression4MathJS.prototype.evaluate = function (values) {
@@ -1233,8 +1163,9 @@ Expression4MathJS.prototype.evaluate4array = function (vname,arr4val) {
   var ret = null;
   for (var i = 0; i < arr4val.length; i++) {
     values[vname] = arr4val[i];
+    
     ret = evaluate(this.tokens, this, values);
-    //ret = this.evaluate(values);
+    
     retarr.push(ret);
   }
   return retarr;
@@ -1244,7 +1175,7 @@ Expression4MathJS.prototype.evaluate4array2d = function (vname1,vname2,arr1,arr2
   var values = {};
   var retarr = [];
   var ret = null;
-  //  Expression: "x^2+y^2" evaluate to "(-3)^2+4^2"
+  
   for (var i2 = 0; i2 < arr2.length; i2++) {
     values[vname2] = arr2[i2];
     var y1 = [];
@@ -1262,7 +1193,7 @@ Expression4MathJS.prototype.evaluate4array3d = function (vname1,vname2,vname3,ar
   var values = {};
   var retarr = [];
   var ret = null;
-  //  Expression: "x^2+y^2" evaluate to "(-3)^2+4^2"
+  
   for (var i3 = 0; i3 < arr3.length; i3++) {
     values[vname3] = arr3[i3];
     var y2 = [];
@@ -1281,8 +1212,23 @@ Expression4MathJS.prototype.evaluate4array3d = function (vname1,vname2,vname3,ar
   return retarr;
 };
 
+Expression4MathJS.prototype.toJS = function (format) {
+  
+  return expressionToJS(this.tokens,format);
+};
+
 Expression4MathJS.prototype.toString = function () {
-  return expressionToString(this.tokens, false);
+  
+  return expressionToJS(this.tokens, "string");
+};
+
+Expression4MathJS.prototype.toSimplified = function () {
+  return expressionToJS(this.tokens, "simplified");
+};
+
+Expression4MathJS.prototype.toLatex = function (largebrackets,options) {
+  
+  return expressionToLatex(this.tokens, largebrackets,options);
 };
 
 Expression4MathJS.prototype.symbols = function (options) {
@@ -1304,13 +1250,12 @@ Expression4MathJS.prototype.variables = function (options) {
 
 Expression4MathJS.prototype.toJSFunction = function (param, variables) {
   var expr = this;
-  var f = new Function(param, 'with(this.functions) with (this.ternaryOps) with (this.binaryOps) with (this.unaryOps) { return ' + expressionToString(this.simplify(variables).tokens, true) + '; }'); // eslint-disable-line no-new-func
+  var f = new Function(param, 'with(this.functions) with (this.ternaryOps) with (this.binaryOps) with (this.unaryOps) { return ' + expressionToString(this.simplify(variables).tokens, "js") + '; }'); 
   return function () {
     return f.apply(expr, arguments);
   };
 };
-//END - src/expression.js
-//BEGIN - src/contains.js
+
 function contains(array, obj) {
   for (var i = 0; i < array.length; i++) {
     if (array[i] === obj) {
@@ -1319,10 +1264,6 @@ function contains(array, obj) {
   }
   return false;
 }
-//END - src/contains.js
-//BEGIN - src/evaluate.js
-
-//import { INUMBER, IOP1, IOP2, IOP3, IVAR, IVARNAME, IFUNCALL, IFUNDEF, IEXPR, IEXPREVAL, IMEMBER, IENDSTATEMENT, IARRAY } from './instruction';
 
 function evaluate(tokens, expr, values) {
   var nstack = [];
@@ -1397,7 +1338,7 @@ function evaluate(tokens, expr, values) {
         throw new Error(f + ' is not a function');
       }
     } else if (type === IFUNDEF) {
-      // Create closure to keep references to arguments and expression
+      
       nstack.push((function () {
         var n2 = nstack.pop();
         var args = [];
@@ -1413,7 +1354,7 @@ function evaluate(tokens, expr, values) {
           }
           return evaluate(n2, expr, scope);
         };
-        // f.name = n1
+        
         Object.defineProperty(f, 'name', {
           value: n1,
           writable: false
@@ -1444,7 +1385,7 @@ function evaluate(tokens, expr, values) {
   if (nstack.length > 1) {
     throw new Error('invalid Expression (parity)');
   }
-  // Explicitly return zero to avoid test issues caused by -0
+  
   return nstack[0] === 0 ? 0 : resolveExpression(nstack[0], values);
 }
 
@@ -1465,18 +1406,29 @@ function isExpressionEvaluator(n) {
 function resolveExpression(n, values) {
   return isExpressionEvaluator(n) ? n.value(values) : n;
 }
-//END - src/evaluate.js
-//BEGIN - src/expression-to-string.js
 
-//import { INUMBER, IOP1, IOP2, IOP3, IVAR, IVARNAME, IFUNCALL, IFUNDEF, IEXPR, IMEMBER, IENDSTATEMENT, IARRAY } from './instruction';
-
-function expressionToString(tokens, toJS) {
+function expressionToString(tokens, format, values) {
+  if (format == "js") {
+    return expressionToJS(tokens, format, values);
+  }
+  Values = values || {};
+  format = format || "expr";
   var nstack = [];
+  var vstack = [];
+  var tstack = [];
   var n1, n2, n3;
-  var f, args, argCount;
+  var t1, t2, t3;
+  var v1, v2, v3;
+  var ft, fv;
+  var prefix,infix,infix2,postfix;
+  var f, args, targs, argCount, varname;
+  var out = "";
+  
+  var ft;
   for (var i = 0; i < tokens.length; i++) {
     var item = tokens[i];
     var type = item.type;
+    
     if (type === INUMBER) {
       if (typeof item.value === 'number' && item.value < 0) {
         nstack.push('(' + item.value + ')');
@@ -1485,25 +1437,45 @@ function expressionToString(tokens, toJS) {
       } else {
         nstack.push(escapeValue(item.value));
       }
+      tstack.push(type);
     } else if (type === IOP2) {
+
       n2 = nstack.pop();
       n1 = nstack.pop();
+      t2 = tstack.pop();
+      t1 = tstack.pop();
       f = item.value;
-      if (toJS) {
+      if (format == "js") {
         if (f === '^') {
           nstack.push('Math.pow(' + n1 + ', ' + n2 + ')');
+          tstack.push(INUMBER);
         } else if (f === 'and') {
           nstack.push('(!!' + n1 + ' && !!' + n2 + ')');
+          tstack.push(IBOOLEAN);
         } else if (f === 'or') {
           nstack.push('(!!' + n1 + ' || !!' + n2 + ')');
+          tstack.push(IBOOLEAN);
         } else if (f === '||') {
           nstack.push('(function(a,b){ return Array.isArray(a) && Array.isArray(b) ? a.concat(b) : String(a) + String(b); }((' + n1 + '),(' + n2 + ')))');
+          if ((t1 == IARRAY) || (t2 == IARRAY)) {
+            tstack.push(ISTRING);
+          } else if ((t1 == ISTRING) || (t2 == ISTRING)) {
+            tstack.push(ISTRING);
+          } else {
+            tstack.push(IARRAY);
+          }
         } else if (f === '==') {
           nstack.push('(' + n1 + ' === ' + n2 + ')');
+          tstack.push(IBOOLEAN);
         } else if (f === '!=') {
           nstack.push('(' + n1 + ' !== ' + n2 + ')');
+          tstack.push(IBOOLEAN);
         } else if (f === '[') {
           nstack.push(n1 + '[(' + n2 + ') | 0]');
+        } else if (f === '*') {
+          nstack.push('((' + n1 + ') ' + f + ' (' + n2 + '))');
+        } else if (f === '/') {
+          nstack.push('((' + n1 + ') ' + f + ' (' + n2 + '))');
         } else {
           nstack.push('(' + n1 + ' ' + f + ' ' + n2 + ')');
         }
@@ -1513,83 +1485,1245 @@ function expressionToString(tokens, toJS) {
         } else {
           nstack.push('(' + n1 + ' ' + f + ' ' + n2 + ')');
         }
+        tstack.push(IEXPRESSION);
       }
     } else if (type === IOP3) {
+
       n3 = nstack.pop();
       n2 = nstack.pop();
       n1 = nstack.pop();
+      t3 = tstack.pop();
+      t2 = tstack.pop();
+      t1 = tstack.pop();
+      v3 = vstack.pop();
+      v2 = vstack.pop();
+      v1 = vstack.pop();
       f = item.value;
       if (f === '?') {
         nstack.push('(' + n1 + ' ? ' + n2 + ' : ' + n3 + ')');
+        vstack.push('(' + n1 + ' ? ' + n2 + ' : ' + n3 + ')');
+        tstack.push(ICONDITIONAL);
       } else {
         throw new Error('invalid Expression');
       }
     } else if (type === IVAR || type === IVARNAME) {
-      nstack.push(item.value);
+      var varname = item.value;
+      if (values[varname]) {
+        nstack.push(values[varname]);
+        vstack.push(values[varname]);
+        tstack.push(type);
+      } else {
+        nstack.push(varname);
+        vstack.push(varname);
+        tstack.push(type);
+      }
     } else if (type === IOP1) {
+
       n1 = nstack.pop();
+      t1 = tstack.pop();
+      v1 = vstack.pop();
       f = item.value;
       if (f === '-' || f === '+') {
-        nstack.push('(' + f + n1 + ')');
-      } else if (toJS) {
+        
+        tstack.push(IVAR);
+        nstack.push('(' + f + " "+ n1 + ')');
+        vstack.push('(' + f + " "+ n1 + ')');
+      } else if (format == "js") {
         if (f === 'not') {
+          tstack.push(IBOOLEAN);
           nstack.push('(' + '!' + n1 + ')');
+          vstack.push('(' + '!' + n1 + ')');
         } else if (f === '!') {
+          tstack.push(INUMBER);
           nstack.push('fac(' + n1 + ')');
+          vstack.push('fac(' + n1 + ')');
         } else {
+          tstack.push(IRETURN);
           nstack.push(f + '(' + n1 + ')');
+          vstack.push(f + '(' + n1 + ')');
         }
       } else if (f === '!') {
+        tstack.push(INUMBER);
         nstack.push('(' + n1 + '!)');
+        vstack.push('(' + n1 + '!)');
       } else {
-        nstack.push('(' + f + ' ' + n1 + ')');
+        tstack.push(IRETURN+"1");
+        nstack.push(' ' + f + '(' + n1 + ')');
+        vstack.push(' ' + f + '(' + n1 + ')');
       }
     } else if (type === IFUNCALL) {
+
       argCount = item.value;
       args = [];
+      targs = [];
+      vargs = [];
       while (argCount-- > 0) {
         args.unshift(nstack.pop());
+        targs.unshift(tstack.pop());
+        vargs.unshift(vstack.pop());
+        
       }
       f = nstack.pop();
-      nstack.push(f + '(' + args.join(', ') + ')');
+      ft = tstack.pop();
+      fv = vstack.pop();
+      var argstr = "";
+      if (f == "cases") {
+        
+        prefix = '';
+        infix  = ' ';
+        postfix= ' ';
+
+        var max = Math.round(args.length/2 - 0.01);
+        var closebrackets = "";
+        for (var i = 0; i < max; i++) {
+          argstr += "("+args[2*i+1]+" ? "+args[2*i] + " : ";
+          closebrackets += ")";
+        }
+        if (2*max < args.length) {
+
+            argstr += " "+args[2*max]+" ";
+        } else {
+          argstr += " false ";
+        }
+        argstr += closebrackets;
+        nstack.push(map2string(prefix, f , infix , argstr , postfix));
+        vstack.push(map2vector(prefix, f , infix , argstr , postfix));
+        tstack.push(ICONDITIONAL);
+      } else {
+        prefix = ' ';
+        infix  = left+'(';
+        postfix= right + ')';
+        argstr = args.join(', ');
+        
+        nstack.push(map2string(prefix, f , infix , argstr , postfix));
+        vstack.push(map2vector(prefix, f , infix , argstr , postfix));
+        tstack.push(IFUNCTIONCALL);
+      }
+      
+      tstack.push(IRETURN+"2");
     } else if (type === IFUNDEF) {
       n2 = nstack.pop();
+      v2 = vstack.pop();
+      t2 = tstack.pop();
       argCount = item.value;
       args = [];
       while (argCount-- > 0) {
         args.unshift(nstack.pop());
+        tstack.pop();
       }
       n1 = nstack.pop();
-      if (toJS) {
+      v1 = vstack.pop();
+      t1 = tstack.pop();
+      if (format == "js") {
         nstack.push('(' + n1 + ' = function(' + args.join(', ') + ') { return ' + n2 + ' })');
       } else {
         nstack.push('(' + n1 + '(' + args.join(', ') + ') = ' + n2 + ')');
       }
+      tstack.push(IEXPRESSION);
     } else if (type === IMEMBER) {
       n1 = nstack.pop();
+      v1 = vstack.pop();
+      t1 = tstack.pop();
       nstack.push(n1 + '.' + item.value);
+      tstack.push(t1);
     } else if (type === IARRAY) {
       argCount = item.value;
       args = [];
+      targs = [];
+      vargs = [];
       while (argCount-- > 0) {
         args.unshift(nstack.pop());
+        targs.unshift(tstack.pop());
+        vargs.unshift(vstack.pop());
       }
       nstack.push('[' + args.join(', ') + ']');
+      vstack.push('[' + vargs.join(', ') + ']');
+      tstack.push('[' + targs.join(', ') + ']');
     } else if (type === IEXPR) {
-      nstack.push('(' + expressionToString(item.value, toJS) + ')');
+      nstack.push('(' + expressionToString(item.value, format) + ')');
+      vstack.push('(' + expressionToString(item.value, format) + ')');
+      tstack.push(IEXPRESSION);
     } else if (type === IENDSTATEMENT) {
-      // eslint-disable no-empty
+      
+    } else {
+      throw new Error('invalid Expression');
+    }
+
+  }
+  if (nstack.length > 1) {
+    
+    var vChar = ";";
+    if (format == "js") {
+      vChar = ","
+    }
+    nstack = [ nstack.join(vChar) ];
+    vstack = [ vstack.join(vChar) ];
+    tstack = [ tstack.join(vChar) ];
+
+  }
+  return String(nstack[0]);
+}
+
+function expressionToJS(tokens,format) {
+  format = format || "js";
+  var nstack = [];
+  var vstack = [];
+  var tstack = [];
+  var n1, n2, n3;
+  var t1, t2, t3;
+  var v1, v2, v3;
+  var ft, fv, varr;
+  var prefix,infix,infix2,postfix;
+  var f, args, targs, vargs, argCount;
+  var out = "";
+  for (var i = 0; i < tokens.length; i++) {
+    var item = tokens[i];
+    var type = item.type;
+    
+    if (type === INUMBER) {
+    
+      if (typeof item.value === 'number' && item.value < 0) {
+        
+        nstack.push('(' + item.value + ')');
+        vstack.push('(' + item.value + ')');
+        tstack.push(INUMBER);
+      } else if (Array.isArray(item.value)) {
+        
+        nstack.push('[' + item.value.map(escapeValue).join(', ') + ']');
+        vstack.push( item.value.map(escapeValue) );
+        tstack.push(IARRAY);
+      } else {
+        
+        nstack.push(escapeValue(item.value));
+        vstack.push(escapeValue(item.value));
+        tstack.push(INUMBER);
+      }
+    } else if (type === IOP2) {
+
+      n2 = nstack.pop();
+      n1 = nstack.pop();
+      t2 = tstack.pop();
+      t1 = tstack.pop();
+      v2 = vstack.pop();
+      v1 = vstack.pop();
+      f = item.value;
+      if (f === '^') {
+        if (format == "simplified") {
+          prefix = '(';
+          infix  = ')^(';
+          postfix= ')';
+        } else {
+          prefix = 'Math.pow(';
+          infix  = ', ';
+          postfix= ')';
+        }
+        
+        vstack.push(map2vector(prefix , v1 , infix , v2 , postfix,"0","1"));
+        nstack.push(map2nstack(t1 ,t2 ,prefix , n1 , v1 , infix , n2, v2 , postfix,"0","1"));
+        tstack.push(map2tstack(t1,t2));
+      } else if (f === 'and') {
+        if (format == "simplified") {
+          prefix = '(';
+          infix  = ' and ';
+          postfix= ')';
+        } else {
+          prefix = '(!!'
+          infix  = ' && !!'
+          postfix= ')';
+        }
+
+        vstack.push(map2vector(prefix , v1 , infix , v2 , postfix,STRUE,STRUE));
+        nstack.push(map2nstack(t1 ,t2 ,prefix , n1 , v1 , infix , n2, v2 , postfix, STRUE, STRUE));
+        tstack.push(map2tstack(t1,t2,IBOOLEAN,IBOOLEAN));
+        
+      } else if (f === 'or') {
+        if (format == "simplified") {
+          prefix = '(';
+          infix  = ' or ';
+          postfix= ')';
+        } else {
+          prefix = '(!!'
+          infix  = ' || !!'
+          postfix= ')';
+        }
+        vstack.push(map2vector(prefix , v1 , infix , v2 , postfix,STRUE,STRUE));
+        nstack.push(map2nstack(t1 ,t2 ,prefix , n1 , v1 , infix , n2, v2 , postfix, STRUE, STRUE));
+        tstack.push(map2tstack(t1,t2,IBOOLEAN,IBOOLEAN));
+        
+        tstack.push(IBOOLEAN);
+      } else if (f === '||') {
+        
+        if (format == "simplified") {
+          prefix = '[';
+          infix  = ',';
+          postfix= ']';
+        } else {
+          prefix = '(function(a,b){ return Array.isArray(a) && Array.isArray(b) ? a.concat(b) : String(a) + String(b); }((';
+          infix  = '),('
+          postfix=  ')))';
+        }
+        vstack.push(map2vector(prefix , v1 , infix , v2 , postfix,STRUE,STRUE));
+        nstack.push(map2nstack(t1 ,t2 ,prefix , n1 , v1 , infix , n2, v2 , postfix, STRUE, STRUE));
+        tstack.push(map2tstack(t1,t2,IBOOLEAN,IBOOLEAN));
+        
+        tstack.push(IARRAY);
+      } else if (f === '==') {
+        if (format == "simplified") {
+          prefix = '[';
+          infix  = ',';
+          postfix= ']';
+        } else {
+          prefix = '(';
+          infix  = ' === ';
+          postfix= ')';
+        }
+        vstack.push(map2vector(prefix , v1 , infix , v2 , postfix,STRUE,STRUE));
+        nstack.push(map2nstack(t1 ,t2 ,prefix , n1 , v1 , infix , n2, v2 , postfix, STRUE, STRUE));
+        tstack.push(map2tstack(t1,t2,IBOOLEAN,IBOOLEAN));
+        
+      } else if (f === '!=') {
+        prefix = '(';
+        infix  = ' !== ';
+        postfix= ')';
+        vstack.push(map2vector(prefix , v1 , infix , v2 , postfix,STRUE,STRUE));
+        nstack.push(map2nstack(t1 ,t2 ,prefix , n1 , v1 , infix , n2, v2 , postfix, STRUE, STRUE));
+        tstack.push(map2tstack(t1,t2,IBOOLEAN,IBOOLEAN));
+        
+      } else if ((f === '+') || (f === '-')) {
+        prefix = '((';
+        infix  = ') '+f+' (';
+        postfix= '))';
+        varr = map2vector(prefix , v1 , infix , v2 , postfix,0,0,"ADDSUB4JS");
+        
+        vstack.push(varr);
+        tstack.push(type4operands(t1,t2));
+        nstack.push(nonterm4array(varr));
+        
+      } else if (f === '*') {
+        prefix = '((';
+        infix  = ') * (';
+        postfix= '))';
+        varr = map2vector(prefix , v1 , infix , v2 , postfix,1,1,"MULT4JS");
+        
+        vstack.push(varr);
+        tstack.push(type4operands(t1,t2));
+        nstack.push(nonterm4array(varr));
+        
+      } else if (f === '/') {
+        prefix = '((';
+        infix  = ' / ';
+        postfix= '))';
+        varr = map2vector(prefix , v1 , infix , v2 , postfix,1,1,"DIV4JS");
+        
+        vstack.push(varr);
+        tstack.push(type4operands(t1,t2));
+        nstack.push(nonterm4array(varr));
+        
+      } else if (f === '[') {
+        if (format == "simplified") {
+          prefix = '';
+          infix  = '[';
+          postfix= ']';
+        } else {
+          prefix = '[(';
+          infix  = ' ';
+          postfix= ') | 0]';
+        }
+
+        varr = map2vector(prefix , v1 , infix , v2 , postfix,1,1,"DIV4JS");
+        
+        vstack.push(varr);
+        tstack.push(type4operands(t1,t2));
+        nstack.push(nonterm4array(varr));
+
+      } else {
+        prefix = '(';
+        infix  = ' '+f+' ';
+        postfix= ')';
+        varr = map2vector(prefix , v1 , infix , v2 , postfix,0,0,"OP2");
+        
+        vstack.push(varr);
+        tstack.push(type4operands(t1,t2));
+        nstack.push(nonterm4array(varr));
+        
+      }
+    } else if (type === IOP3) {
+
+      n3 = nstack.pop();
+      n2 = nstack.pop();
+      n1 = nstack.pop();
+      t3 = tstack.pop();
+      t2 = tstack.pop();
+      t1 = tstack.pop();
+      f = item.value;
+      if (f === '?') {
+        prefix = '(';
+        infix  = ' '+f+' ';
+        infix2 = ' : ';
+        postfix= ')';
+        nstack.push(map3string(prefix , n1 , infix , n2 , infix2, n3 , postfix,"CONDITIONAL"));
+        vstack.push(map3vector(prefix , v1 , infix , v2 , infix2, n3 , null, null, postfix,"CONDITIONAL"));
+        tstack.push(ICONDITIONAL);
+        if (t2 !== t3) {
+          console.warn("toJS-convert: Type mismatch for if-condition '"+t2+"' not equal to '"+t3+"'");
+        }
+        
+      } else {
+        throw new Error('invalid Expression');
+      }
+    } else if (type === IVAR || type === IVARNAME) {
+      tstack.push(type);
+      nstack.push(item.value);
+      vstack.push(item.value);
+    } else if (type === IOP1) {
+
+      n1 = nstack.pop();
+      t1 = tstack.pop();
+      v1 = vstack.pop();
+      f = item.value;
+      if (f === '-' || f === '+') {
+        prefix = '(';
+        infix  = ' ';
+        postfix= ')';
+        nstack.push(map2string(prefix, f , infix , n1 , postfix,"SIGNVAL"));
+        vstack.push(map2vector(prefix, f , infix , v1 , postfix,"+",0,"SIGNVAL"));
+        tstack.push(IEXPRESSION);
+
+      } else if (f === 'not') {
+        
+        prefix = '(';
+        infix  = '';
+        postfix= ')';
+        nstack.push(map2string(prefix, "!" , infix , n1 , postfix,"NOT"));
+        vstack.push(map2vector(prefix, "!" , infix , v1 , postfix, "!","true", "NOT"));
+        tstack.push(IBOOLEAN);
+        
+      } else if (f === '!') {
+        
+        if (format == "simplified") {
+          prefix = ' ';
+          infix  = '';
+          postfix= '!';
+        } else {
+          prefix = 'fac(';
+          infix  = '';
+          postfix= ')';
+        }
+        nstack.push(map2string(prefix, "" , infix , n1 , postfix,"FACULTY1OP"));
+        vstack.push(map2vector(prefix, "" , infix , v1 , postfix," ",0,"FACULTY1OP"));
+        tstack.push(INUMBER);
+        
+      } else {
+        
+        prefix = ' ';
+        infix  = '(';
+        postfix= ')';
+        nstack.push(map2string(prefix, f , infix , n1 , postfix,"FUNCTION1OP"));
+        vstack.push(map2vector(prefix, f , infix , v1 , postfix,null,null,"FUNCTION1OP"));
+        tstack.push(IEXPRESSION);
+        
+      }
+    } else if (type === IFUNCALL) {
+
+      argCount = item.value;
+      args = [];
+      targs = [];
+      vargs = [];
+      while (argCount-- > 0) {
+        args.unshift(nstack.pop());
+        targs.unshift(tstack.pop());
+        vargs.unshift(vstack.pop());
+        
+      }
+      f  = nstack.pop();
+      ft = tstack.pop();
+      fv = vstack.pop();
+      prefix = '';
+      infix  = '(';
+      postfix= ')';
+      var argstr = args.join(', ');
+      if (f == "cases") {
+        
+      } else {
+        nstack.push(map2string(prefix, f , infix , argstr , postfix,"FUNCTION4JS"));
+        vstack.push(map2vector(prefix, f , infix , argstr , postfix,null,null,"FUNCTION4JS"));
+        tstack.push(IEXPRESSION);
+      }
+    
+    } else if (type === IFUNDEF) {
+
+      n2 = nstack.pop();
+      t2 = tstack.pop();
+      argCount = item.value;
+      args = [];
+      targs = []; 
+      vargs = [];
+      while (argCount-- > 0) {
+        args.unshift(nstack.pop());
+        targs.unshift(tstack.pop());
+        vargs.unshift(vstack.pop());
+      }
+      var type4arr = typecast4array(targs);
+      
+      n1 = nstack.pop();
+      t1 = tstack.pop();
+      v1 = vstack.pop();
+      if (format == "simplified") {
+        prefix = ' ';
+        infix  = '(';
+        infix2  = ') = ';
+        postfix= ' ';
+      } else {
+        prefix = '(';
+        infix  = ' = function(';
+        infix2 = ') { return ';
+        postfix= ' })';
+      }
+      var argstr = args.join(', ');
+      nstack.push(map3string(prefix , n1 , infix , argstr , infix2, n2 , postfix,"FUNCTION4JS"));
+      vstack.push(map3vector(prefix , v1 , infix , argstr , infix2, v2 , postfix,null,null,null,"FUNCTION4JS"));
+      tstack.push(IDEFINITION);
+
+    } else if (type === IMEMBER) {
+      n1 = nstack.pop();
+      t1 = tstack.pop();
+      v1 = vstack.pop();
+      nstack.push(n1 + '.' + item.value);
+      tstack.push(t1);
+      vstack.push(IMEMBERPATH);
+    } else if (type === IARRAY) {
+      argCount = item.value;
+      args = [];
+      targs = []; 
+      vargs = []; 
+      while (argCount-- > 0) {
+        args.unshift(nstack.pop());
+        targs.unshift(tstack.pop());
+        vargs.unshift(vstack.pop());
+      }
+      var type4arr = typecast4array(targs);
+      if (type4arr == IARRAY) {
+        nstack.push('[' + args.join(', ') + ']');
+        vstack.push(vargs);
+        tstack.push(IMATRIX);
+      } else {
+        nstack.push('[' + args.join(', ') + ']');
+        vstack.push(vargs);
+        tstack.push(IARRAY);
+      }
+    } else if (type === IEXPR) {
+      nstack.push('(' + expressionToJS(item.value) + ')');
+    } else if (type === IENDSTATEMENT) {
+      
     } else {
       throw new Error('invalid Expression');
     }
   }
   if (nstack.length > 1) {
-    if (toJS) {
-      nstack = [ nstack.join(',') ];
-    } else {
-      nstack = [ nstack.join(';') ];
+    
+    nstack = [ nstack.join(',') ];
+    tstack = [ tstack.join(',') ];
+  }
+  return String(nstack[0]);
+}
+
+function vector2string(vec) {
+  var out = " ";
+  if (vec) {
+    out = JSON.stringify(vec);
+  };
+  return vec;
+}
+
+function vector2jsstring(vec) {
+  var out = "[";
+  var sep = "";
+  if (vec && Array.isArray(vec)) {
+    for (var i = 0; i < vec.length; i++) {
+      if (Array.isArray(vec[i])) {
+        out += sep + vector2jsstring(vec[i])
+      } else {
+        out += sep + vec[i]
+      }
+      sep = ","
     }
   }
+  out += "]"
+  return
+}
+
+function get_args4stack(s,argCount) {
+  var ret = {
+    "type":"UNDEF",
+    "args": [],
+    "targs": [],
+    "vargs": []
+  };
+  while (argCount-- > 0) {
+    ret.args.unshift(s.nstack.pop());
+    ret.targs.unshift(s.tstack.pop());
+    ret.vargs.unshift(s.vstack.pop());
+  }
+  
+  ret.type = typecast4array(ret.targs);
+  return ret;
+}
+
+function map1variable(v) {
+  v = v || " ";
+  var ret = v;
+  if (Array.isArray(ret)) {
+    if (ret.length == 0) {
+      ret.push("vundef");
+    }
+  } else {
+    ret = [v]
+  }
+  return ret;
+}
+
+function map2vector(prefix,v1,infix,v2,postfix,v1default,v2default,label) {
+  var ret = "";
+  var arr = [];
+  var arrcount = 0;
+  v1 = map1variable(v1);
+  v2 = map1variable(v2);
+  v1default = v1default || v1[0] || "v1undef";
+  v2default = v2default || v2[0] || "v2undef";
+  var max = Math.max(v1.length,v2.length);
+  if (max > 0) {
+    
+    if (max == 1) {
+
+      ret = prefix+v1[0]+infix+v2[0]+postfix;
+    } else {
+      
+      if (v1.length == 1) v1default = v1[0];
+      if (v2.length == 1) v2default = v2[0];
+
+      var matcount = 0;
+      if (hasMatrixElements(v1) > 0) {
+        matcount++
+      }
+      if (hasMatrixElements(v2) > 0) {
+        matcount++
+      }
+      if (matcount == 0) {
+        for (var i = 0; i < max; i++) {
+          var n1 = v1[i] || v1default;
+          var n2 = v2[i] || v2default;
+          arr.push(prefix+n1+infix+n2+postfix);
+        }
+        ret = arr;
+      } else {
+        for (var i = 0; i < max; i++) {
+          var v1i = v1[i] || v1default;
+          var v2i = v2[i] || v2default;
+          arr.push(map2vector(prefix,v1i,infix,v2i,postfix,v1default,v2default));
+        }
+        ret = arr;
+      }
+    }
+  } else {
+    console.warn("map2vector(...,v1,...,v2,...) both v1 and v2 are of length 0.");
+  }
+  return ret;
+};
+
+function map2string(prefix,n1,infix,n2,postfix,n1default,n2default,label) {
+  var out = "";
+  n1 = n1 || n1default;
+  n2 = n2 || n2default;
+  return prefix+n1+infix+n2+postfix
+}
+
+function map3vector(prefix,v1,infix,v2,infix2,v3,postfix,v1default,v2default,v3default,label) {
+  var arr = [];
+  var arrcount = 0;
+  v1 = map1variable(v1);
+  v2 = map1variable(v2);
+  v3 = map1variable(v3);
+  v1default = v1default || v1[0];
+  v2default = v2default || v2[0];
+  v3default = v3default || v3[0];
+  var max = Math.max(v1.length,v2.length,v3.length);
+  if (max == 1) {
+    var n1 = v1[0] || v1default;
+    var n2 = v2[0] || v2default;
+    var n3 = v3[0] || v3default;
+    ret = prefix+n1+infix+n2+infix2+n3+postfix;
+  } else {
+    for (var i = 0; i < max; i++) {
+      var n1 = v1[i] || v1default;
+      var n2 = v2[i] || v2default;
+      var n3 = v3[i] || v3default;
+      arr.push(prefix+n1+infix+n2+infix2+n3+postfix);
+    }
+    ret = arr;
+  }
+  return ret;
+};
+
+function map3string(prefix,n1,infix,n2,infix2,v3,postfix,n1default,n2default,n3default,label) {
+  var out = "";
+  n1 = n1 || n1default;
+  n2 = n2 || n2default;
+  n3 = n3 || n3default;
+  return prefix+n1+infix+n2+infix3+n3+postfix
+}
+
+function map2nstack(t1 ,t2 ,prefix , n1, v1 , infix , n2, v2 , postfix, n1default, n2default,label) {
+  var nt = "NONTERM";
+  if ((t1 === IARRAY) || (t2 === IARRAY) || (t1 === IMATRIX) || (t2 === IMATRIX)) {
+    var vec = map2vector(prefix , v1 , infix , v2 , postfix, n1default, n2default, label);
+    nt = "["+vec.join(",")+"]";
+  } else {
+    nt = map2string(prefix, n1 , infix , n2 , postfix);
+  }
+  return nt;
+}
+
+function map2tstack(t1 ,t2, t1default, t2default) {
+  var type = INUMBER;
+  if ((t2default !== IARRAY) && (t2default !== IMATRIX)) {
+    type = t2default;
+  }
+  if ((t1default !== IARRAY) && (t1default !== IMATRIX)) {
+    type = t1default;
+  }
+  if ((t1 === IARRAY) || (t2 === IARRAY)) {
+    type = IARRAY
+  }
+  if ((t1 === IMATRIX) || (t2 === IMATRIX)) {
+    type = IMATRIX
+  }
+  return type;
+}
+
+function jstr(pJSON,indent) {
+  if (indent) {
+    return JSON.stringify(pJSON,null,indent)
+  } else {
+    return JSON.stringify(pJSON)
+  }
+}
+
+function type4operands(t1,t2,default4type) {
+  var type = default4type || INUMBER;
+  if ((t1 == IARRAY) || (t2 == IARRAY)) {
+    type = IARRAY;
+  }
+  if ((t1 == IMATRIX) || (t2 == IMATRIX)) {
+    type = IMATRIX;
+  }
+  return type
+}
+
+function nonterm4array(varr) {
+  var out = "undefarray";
+  if (varr) {
+    if (Array.isArray(varr)) {
+      if (varr.length > 1) {
+        out = "["+varr.join(",")+"]";
+      } else {
+        if (varr.length == 1) {
+          out = varr[0];
+        } else {
+          out += "0len"
+        }
+      }
+    } else {
+      out = varr;
+    }
+    return out;
+  }
+
+}
+
+/*
+var INUMBER = 'INUMBER';
+var IOP1 = 'IOP1';
+var IOP2 = 'IOP2';
+var IOP3 = 'IOP3';
+var IVAR = 'IVAR';
+var IVARNAME = 'IVARNAME';
+var IFUNCALL = 'IFUNCALL';
+var IFUNDEF = 'IFUNDEF';
+var ICONDIF = 'ICONDIF';
+var ISIGN = 'ISIGN';
+var IEXPR = 'IEXPR';
+var IEXPRESSION = 'IEXPRESSION';
+var IEXPREVAL = 'IEXPREVAL';
+var IMEMBER = 'IMEMBER';
+var IENDSTATEMENT = 'IENDSTATEMENT';
+var IARRAY = 'IARRAY';
+var IMATRIX = 'IMATRIX';
+var IBOOLEAN = 'IBOOLEAN';
+*/
+
+function types4array(pTArgs) {
+  var ret = [];
+  if (Array.isArray(pTArgs)) {
+    
+    for (var i = 0; i < pTArgs.length; i++) {
+      if (ret.indexOf(pTArgs[i])< 0) {
+        ret.push(pTArgs[i])
+      } else {
+      }
+    }
+  }
+  return ret;
+}
+
+function typecast4op2(t1,t2) {
+  var ret = IMIXEDTYPE;
+  
+  if (t1 == IARRAY) {
+    ret = IARRAY;
+  } else if (t2 == IARRAY) {
+    ret = IARRAY;
+  };
+  
+  if (t1 == IMATRIX) {
+    ret = IMATRIX;
+  } else if (t2 == IMATRIX) {
+    ret = IMATRIX;
+  };
+  return ret;
+}
+
+function typecast4array(pTArgs) {
+  var ret = types4array(pTArgs);
+  if (ret.length == 1) {
+    return ret[0]
+  } else {
+    if (ret.length == 0) {
+      return IUNDEFINED;
+    } else {
+      return IMIXEDTYPE
+    }
+  }
+}
+
+function hasMatrixElements(pValue) {
+  var ret = 0;
+  if (pValue && Array.isArray(pValue)) {
+    
+    for (var i = 0; i < pValue.length; i++) {
+      
+      if (Array.isArray(pValue[i])) {
+        if (pValue[i].length > ret) {
+          ret = pValue[i].length;
+        };
+      }
+    }
+  }
+
+  return ret;
+}
+
+function getMatrixColDef(pCol,pAlign,pPrefixColdef) {
+  var coldef = pPrefixColdef || "";
+  pAlign = pAlign || "c";
+  pCol = pCol || 0;
+  for (var i = (coldef.length); i < pCol; i++) {
+    coldef += pAlign
+  }
+  return coldef;
+}
+function begin4matrix(pCol,pAlign,pPrefixColdef) {
+  pPrefixColdef = pPrefixColdef || "";
+  var coldef = getMatrixColDef(pCol,pAlign,pPrefixColdef);
+  var out = "\n\\left(\n  \\begin{array}{"+coldef+"}\n";
+  return out
+}
+
+function lines4matrx(pRow,pItem) {
+  var out = "";
+  if (pItem) {
+    if (pItem && Array.isArray(pItem)) {
+      
+      if ((pItem[0].length > 0) && (Array.isArray(pItem[0]))) {
+        
+          var rows = pItem;
+          for (var r = 0; r < rows.length; r++) {
+            var row = rows[r];
+            var vSep = "  ";
+            if (Array.isArray(row)) {
+              for (var c = 0; c < row.length; c++) {
+                out += vSep + row[c];
+                vSep = " & "
+              }
+            } else {
+              out += vSep + row
+            }
+            out += " \\\\\n";
+          }
+      } else {
+
+        for (var i = 0; i < pItem.length; i++) {
+          out += "    "+pItem[i]+" \\\\\n";
+        }
+      }
+    }
+  } else {
+  }
+  return out;
+}
+
+function end4matrix(pCol,pItem) {
+  var out = "";
+  if (pItem) {
+    out += lines4matrx(pCol,pItem);
+  }
+  out += "  \\end{array}\n\\right)\n";
+  
+  return out
+}
+
+function handleMatrix4Output(mat,prefix,rowsep,colsep,postfix) {
+  var out = prefix || "";
+  var row;
+  var csep = "";
+  var colvalue;
+  
+  for (var r = 0; r < mat.length; r++) {
+    
+    csep = "";
+    for (var c = 0; c < row.length; i++) {
+        colvalue = (mat[c][r]) || "0";
+        out += " " + csep + " "+ colvalue;
+        csep = colsep;
+    }
+    out += rowsep
+  }
+  return out;
+}
+
+function expressionToLatex(tokens, toBracket, options) {
+  
+  options = options || {};
+  var nstack = [];
+  var vstack = [];
+  var tstack = [];
+  var n1, n2, n3;
+  var t1, t2, t3;
+  var v1, v2, v3;
+  var ft, fv;
+  var prefix,infix,infix2,postfix;
+  var f, args, targs, argCount, varname;
+  var left = "";
+  var right = "";
+  var out = "";
+  if (toBracket) {
+    left = "\\left";
+    right = "\\right"
+  }
+  var array_level = 0;
+
+  for (var i = 0; i < tokens.length; i++) {
+    var item = tokens[i];
+    var type = item.type;
+    if (type === INUMBER) {
+      if (typeof item.value === 'number' && item.value < 0) {
+        
+        nstack.push('(' + item.value + ')');
+        vstack.push('(' + item.value + ')');
+        tstack.push(type);
+      } else if (Array.isArray(item.value)) {
+        
+        nstack.push('(' + item.value.map(escapeValue).join(',') + ')');
+        vstack.push( item.value.map(escapeValue) );
+        tstack.push(IARRAY);
+      } else {
+        
+        nstack.push(escapeValue(item.value));
+        vstack.push('' + item.value + '');
+        tstack.push(type)
+      }
+    } else if (type === IOP2) {
+
+      n2 = nstack.pop();
+      n1 = nstack.pop();
+      t2 = tstack.pop();
+      t1 = tstack.pop();
+      v2 = vstack.pop();
+      v1 = vstack.pop();
+      f = item.value;
+      if (f === '^') {
+          
+          prefix = '{';
+          infix  = '}^{';
+          postfix= '}';
+
+          vstack.push(map2vector(prefix , v1 , infix , v2 , postfix,"0","1","POWER4TEX"));
+          nstack.push(map2nstack4latex(t1 ,t2 ,prefix , n1 , v1 , infix , n2, v2 , postfix,"0","1","POWER4TEX"));
+          tstack.push(map2tstack(t1,t2,INUMBER,INUMBER));
+      } else if (f === 'and') {
+          
+          prefix = '{';
+          infix  = " \\wedge ";
+          postfix= '}';
+
+          vstack.push(map2vector(prefix , v1 , infix , v2 , postfix,"true","true","AND4TEX"));
+          nstack.push(map2nstack(t1 ,t2 ,prefix , n1 , v1 , infix , n2, v2 , postfix,"true","true","AND4TEX"));
+          tstack.push(map2tstack(t1,t2,IBOOLEAN,IBOOLEAN));
+      } else if (f === 'or') {
+          
+          prefix = '{';
+          infix  = " \\vee ";
+          postfix= '}';
+
+          vstack.push(map2vector(prefix , v1 , infix , v2 , postfix,"true","true","OR4TEX"));
+          nstack.push(map2nstack(t1 ,t2 ,prefix , n1 , v1 , infix , n2, v2 , postfix,"true","true","OR4TEX"));
+          tstack.push(map2tstack(t1,t2,IBOOLEAN,IBOOLEAN));
+      } else if (f === '==') {
+          
+          prefix = '{';
+          infix  = " = ";
+          postfix= '}';
+          vstack.push(map2vector(prefix , v1 , infix , v2 , postfix,"true","true","EQUALS4TEX"));
+          nstack.push(map2nstack(t1 ,t2 ,prefix , n1 , v1 , infix , n2, v2 , postfix,"true","true","EQUALS4TEX"));
+          tstack.push(map2tstack(t1,t2,IBOOLEAN,IBOOLEAN));
+      } else if (f === '!=') {
+          
+          prefix = '{';
+          infix  = " \\not= ";
+          postfix= '}';
+          vstack.push(map2vector(prefix , v1 , infix , v2 , postfix,"true","true","NOT4TEX"));
+          nstack.push(map2nstack(t1 ,t2 ,prefix , n1 , v1 , infix , n2, v2 , postfix,"true","true","NOT4TEX"));
+          tstack.push(map2tstack(t1,t2,IBOOLEAN,IBOOLEAN));
+      } else if (f === '*') {
+          
+          prefix = '{';
+          infix  = " \\cdot ";
+          postfix= '}';
+          vstack.push(map2vector(prefix , v1 , infix , v2 , postfix,"1","1","MULT4TEX"));
+          nstack.push(map2nstack(t1 ,t2 ,prefix , n1 , v1 , infix , n2, v2 , postfix,"1","1","MULT4TEX"));
+          tstack.push(map2tstack(t1,t2,INUMBER,INUMBER));
+      } else if (f === '/') {
+          
+          prefix = "\\frac{";
+          infix  = "}{";
+          postfix= '}';
+          vstack.push(map2vector(prefix , v1 , infix , v2 , postfix,"1","1","FRAC4TEX"));
+          nstack.push(map2nstack(t1 ,t2 ,prefix , n1 , v1 , infix , n2, v2 , postfix,"1","1","FRAC4TEX"));
+          tstack.push(map2tstack(t1,t2,INUMBER,INUMBER));
+    } else if (f === '[') {
+          
+          prefix = " ";
+          infix  = left + '(';
+          postfix= right + ')';
+          nstack.push(map2string(prefix, n1 , infix , n2 , postfix),"SIGNARR4TEX");
+          vstack.push(map2vector(prefix , v1 , infix , v2 , postfix),"SIGNARR4TEX");
+          tstack.push(IARRAY);
+      } else {
+
+        prefix = '{';
+        infix  = ' '+f+' ';
+        postfix= '}';
+        nstack.push(map2string(prefix , n1 , infix , n2 , postfix,"STANDARD4TEX"));
+        vstack.push(map2vector(prefix , v1 , infix , v2 , postfix,"STANDARD4TEX"));
+        tstack.push(typecast4array([t1,t2]));
+      }
+    } else if (type === IOP3) {
+
+      n3 = nstack.pop();
+      n2 = nstack.pop();
+      n1 = nstack.pop();
+      t3 = tstack.pop();
+      t2 = tstack.pop();
+      t1 = tstack.pop();
+      v3 = vstack.pop();
+      v2 = vstack.pop();
+      v1 = vstack.pop();
+      f = item.value;
+      if (f === '?') {
+
+        prefix = '{';
+        infix  = "} \\rightarrow {";
+        infix2 = "} \\wedge { \\neg ";
+        postfix= '}';
+        nstack.push(map3string(prefix, n1 , infix , n2 ,  infix2, n1 + infix + n3 ,postfix));
+        vstack.push(map3vector(prefix, v1 , infix , v2 ,  infix2, n1 + infix + n3 ,postfix));
+        tstack.push(ICONDITIONAL);
+        
+      } else {
+        throw new Error('invalid Expression');
+      }
+    } else if (type === IVAR || type === IVARNAME) {
+      nstack.push(item.value);
+      tstack.push(IVAR);
+      vstack.push(item.value);
+    } else if (type === IOP1) {
+
+      n1 = nstack.pop();
+      t1 = tstack.pop();
+      v1 = vstack.pop();
+      f = item.value;
+      if (f === '-' || f === '+') {
+
+        prefix = check4brackets(t1,left+'(');
+        infix  = '';
+        postfix= check4brackets(t1,right + ')');
+        nstack.push(map2string(prefix, f , infix , n1 , postfix,"SIGNED4TEX"));
+        vstack.push(map2vector(prefix, f , infix , v1 , postfix,"SIGNED4TEX"));
+        tstack.push(ISIGN);
+        
+      } else if (f === 'not') {
+
+        prefix = left+'(';
+        infix  = " \\neg ";
+        postfix= right + ')';
+        nstack.push(map2string(prefix, " " , infix , n1 , postfix,"NEG4TEX"));
+        vstack.push(map2vector(prefix, " " , infix , v1 , postfix,"NEG4TEX"));
+        
+        tstack.push(IBOOLEAN);
+      } else if (f === '!') {
+          
+          prefix = '';
+          infix  = '';
+          postfix= '! ';
+          nstack.push(map2string(prefix, n1 , infix , f , postfix,"FACULTY4TEX"));
+          vstack.push(map2vector(prefix, v1 , infix , f , postfix,"FACULTY4TEX"));
+          tstack.push(INUMBER);
+          
+      } else {
+        
+        prefix = ' ';
+        infix  = left+'(';
+        postfix= right + ')';
+        nstack.push(map2string(prefix, f , infix , n1 , postfix,"PREFIX4TEX"));
+        vstack.push(map2vector(prefix, f , infix , v1 , postfix,"PREFIX4TEX"));
+        
+        tstack.push(IEXPRESSION);
+        
+      }
+    } else if (type === IFUNCALL) {
+
+      argCount = item.value;
+      args = [];
+      targs = [];
+      vargs = [];
+      while (argCount-- > 0) {
+        args.unshift(nstack.pop());
+        targs.unshift(tstack.pop());
+        vargs.unshift(vstack.pop());
+        
+      }
+      f = nstack.pop();
+      ft = tstack.pop();
+      fv = vstack.pop();
+      if (f == "cases") {
+        
+        prefix = "\n\\left\\{\n \\begin{array}{lcl}";
+        infix  = ' ';
+        postfix= "\n  \\end{array}\n\right. ";
+        /*\left\{
+            \begin{array}{lcl}
+                1 & , &  x > 0\\
+                -1 & , &  x < 0\\
+                 0 & , &
+            \end{array}
+        \right.
+        */
+
+        var max = Math.round(args.length/2 - 0.01);
+        var closebrackets = "";
+        for (var i = 0; i < max; i++) {
+          argstr += "\n  "+args[2*i]+" & , & "+args[2*i+1] + " \\\\ ";
+        }
+        if (2*max < args.length) {
+
+          argstr += "\n  "+args[2*max]+" & , &   \\\\ ";
+        }
+        argstr += closebrackets;
+        nstack.push(map2string(prefix, f , infix , argstr , postfix));
+        vstack.push(map2vector(prefix, f , infix , argstr , postfix));
+        tstack.push(ICONDITIONAL);
+
+      } else {
+        prefix = ' ';
+        infix  = left+'(';
+        postfix= right + ')';
+        var argstr = args.join(', ');
+        nstack.push(map2string(prefix, f , infix , argstr , postfix,"FUNCTION4TEX"));
+        vstack.push(map2vector(prefix, f , infix , argstr , postfix,"FUNCTION4TEX"));
+        tstack.push(IEXPRESSION);
+      }
+    } else if (type === IFUNDEF) {
+
+      n2 = nstack.pop();
+      argCount = item.value;
+      args = [];
+      targs = []; 
+      vargs = []; 
+      while (argCount-- > 0) {
+        args.unshift(nstack.pop());
+        targs.unshift(tstack.pop());
+        vargs.unshift(vstack.pop());
+        
+      }
+      n1 = nstack.pop();
+      t1 = tstack.pop();
+      v1 = vstack.pop();
+      prefix = ' ';
+      infix  = left+'(';
+      postfix= right + ')';
+      var argstr = args.join(', ');
+      nstack.push(map2string(prefix, f , infix , argstr , postfix,"FUNCTION4TEX"));
+      vstack.push(map2vector(prefix, f , infix , argstr , postfix,"FUNCTION4TEX"));
+      tstack.push(IEXPRESSION);
+
+    } else if (type === IMEMBER) {
+      n1 = nstack.pop();
+      t1 = tstack.pop();
+      nstack.push(n1 + '.' + item.value);
+      tstack.push(type);
+    } else if (type === IARRAY) {
+      argCount = item.value;
+      args = [];
+      targs = []; 
+      vargs = []; 
+      while (argCount-- > 0) {
+        args.unshift(nstack.pop());
+        targs.unshift(tstack.pop());
+        vargs.unshift(vstack.pop());
+      }
+      var type4arr = typecast4array(targs);
+      var vlength = 1
+      if (type4arr == IARRAY) {
+        out = begin4matrix(targs.length,"c");
+        out += end4matrix(targs.length,vargs);
+        tstack.push(IMATRIX);
+      } else {
+        out = begin4matrix(1,"c");
+        out += end4matrix(1,args);
+        tstack.push(IARRAY);
+      }
+      nstack.push(out);
+      vstack.push(vargs);
+    } else if (type === IEXPR) {
+      nstack.push(left+'(' + expressionToLatex(item.value, toBracket) + right+')');
+      tstack.push(type);
+      vstack.push(IEXPRESSION);
+    } else if (type === IENDSTATEMENT) {
+      
+    } else {
+      throw new Error('invalid Expression');
+    }
+  }
+  
+  if (nstack.length > 1) {
+    if (toBracket) {
+      nstack = [ nstack.join(' , ') ];
+    } else {
+      nstack = [ nstack.join(' ; ') ];
+    }
+    tstack.push(IARRAY);
+    vstack =  [nstack];
+  }
+
   return String(nstack[0]);
 }
 
@@ -1599,9 +2733,82 @@ function escapeValue(v) {
   }
   return v;
 }
-//END - src/expression-to-string.js
-//BEGIN - src/functions.js
-//import contains from './contains';
+
+function check4brackets(nt,leftright,bracket) {
+  var ret = " ";
+  if ((nt != INUMBER) || (nt != IVAR)) {
+    ret = leftright + bracket;
+  }
+  return ret;
+}
+
+function map2nstack4latex(t1 ,t2 ,prefix , n1, v1 , infix , n2, v2 , postfix, n1default, n2default,label) {
+  var nt = "NONTERM"
+  var out;
+  if ((t1 === IARRAY) || (t2 === IARRAY)) {
+    var vec = map2vector(prefix , v1 , infix , v2 , postfix, n1default, n2default, label);
+    
+    nt = begin4matrix(1,"c");
+    nt += end4matrix(1,vec);
+  } else if ((t1 === IMATRIX) || (t2 === IMATRIX)) {
+    var mat = map2vector(prefix , v1 , infix , v2 , postfix, n1default, n2default, label);
+    if (mat && mat.length > 0) {
+      nt = begin4matrix(mat[0].length,"c");
+      nt += end4matrix(1,vec);
+    } else {
+      nt = begin4matrix(1,"c");
+      nt += end4matrix(1,[["undefinedmatrix"]]);
+    }
+  
+  } else {
+    nt = map2string(prefix, n1 , infix , n2 , postfix);
+  }
+  return nt;
+}
+
+/*
+if (type4arr == IARRAY) {
+  out = begin4matrix(targs.length,"c");
+  out += end4matrix(targs.length,vargs);
+  tstack.push(IMATRIX);
+} else {
+  out = begin4matrix(1,"c");
+  out += end4matrix(1,args);
+  tstack.push(IARRAY);
+}
+if (type === IARRAY) {
+  
+  array_level++;
+  if (hasMatrixElements(item.value) > 0) {
+    var cols = hasMatrixElements(item.value);
+    var coldef = getMatrixColDef(cols,"c");
+    var arr = item.value;
+    var out = left+"("+"\n\\begin{array}{"+coldef+"}";
+    for (var i = 0; i < arr.length; i++) {
+      
+      if (Array.isArray(arr[i])) {
+        out += '  \n' + (arr[i]).map(escapeValue).join(' & ') + '\\\\';
+      } else {
+        out += escapeValue(arr[i]);
+      }
+    }
+    out += "\n\\end{array} \\right)";
+    nstack.push(out);
+    tstack.push(IMATRIX);
+  } else if (Array.isArray(item.value)) {
+    var out = "\\left( \n\\begin{array}{"+coldef+"}";
+    var coldef = getMatrixColDef(item.value.length,"c");
+    out += item.value.map(escapeValue).join(' & ') + "\\\\";
+    out += "\n\\end{array} \\right)";
+    
+    nstack.push(out);
+    tstack.push();
+  } else {
+    nstack.push(escapeValue(item.value));
+    tstack.push(type);
+  }
+} else
+*/
 
 function add(a, b) {
   return Number(a) + Number(b);
@@ -1713,7 +2920,7 @@ function random(a) {
   return Math.random() * (a || 1);
 }
 
-function factorial(a) { // a!
+function factorial(a) { 
   return gamma(a + 1);
 }
 
@@ -1734,7 +2941,6 @@ var GAMMA_P = [
   0.36899182659531622704e-5
 ];
 
-// Gamma function from math.js
 function gamma(n) {
   var t, x;
 
@@ -1744,7 +2950,7 @@ function gamma(n) {
     }
 
     if (n > 171) {
-      return Infinity; // Will overflow
+      return Infinity; 
     }
 
     var value = n - 2;
@@ -1755,7 +2961,7 @@ function gamma(n) {
     }
 
     if (res === 0) {
-      res = 1; // 0! is per definition 1
+      res = 1; 
     }
 
     return res;
@@ -1766,10 +2972,10 @@ function gamma(n) {
   }
 
   if (n >= 171.35) {
-    return Infinity; // will overflow
+    return Infinity; 
   }
 
-  if (n > 85.0) { // Extended Stirling Approx
+  if (n > 85.0) { 
     var twoN = n * n;
     var threeN = twoN * n;
     var fourN = threeN * n;
@@ -1830,20 +3036,20 @@ function condition(cond, yep, nope) {
 * @return {Number} The adjusted value.
 */
 function roundTo(value, exp) {
-  // If the exp is undefined or zero...
+  
   if (typeof exp === 'undefined' || +exp === 0) {
     return Math.round(value);
   }
   value = +value;
   exp = -(+exp);
-  // If the value is not a number or the exp is not an integer...
+  
   if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0)) {
     return NaN;
   }
-  // Shift
+  
   value = value.toString().split('e');
   value = Math.round(+(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp)));
-  // Shift back
+  
   value = value.toString().split('e');
   return +(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp));
 }
@@ -1955,10 +3161,6 @@ function sum(array) {
     return total + Number(value);
   }, 0);
 }
-//END - src/functions.js
-//BEGIN - src/get-symbols.js
-//import { IVAR, IMEMBER, IEXPR, IVARNAME } from './instruction';
-//import contains from './contains';
 
 function getSymbols(tokens, symbols, options) {
   options = options || {};
@@ -1994,8 +3196,6 @@ function getSymbols(tokens, symbols, options) {
     symbols.push(prevVar);
   }
 }
-//END - src/get-symbols.js
-//BEGIN - src/instruction.js
 
 var INUMBER = 'INUMBER';
 var IOP1 = 'IOP1';
@@ -2005,15 +3205,36 @@ var IVAR = 'IVAR';
 var IVARNAME = 'IVARNAME';
 var IFUNCALL = 'IFUNCALL';
 var IFUNDEF = 'IFUNDEF';
+var ICONDIF = 'ICONDIF';
+var ISIGN = 'ISIGN';
 var IEXPR = 'IEXPR';
+var IRETURN = 'IRETURN';
+var IDEFINITION = 'IDEFINITION';
+var IEXPRESSION = 'IEXPRESSION';
 var IEXPREVAL = 'IEXPREVAL';
 var IMEMBER = 'IMEMBER';
+var IMEMBERPATH = 'IMEMBERPATH';
 var IENDSTATEMENT = 'IENDSTATEMENT';
 var IARRAY = 'IARRAY';
+var IMATRIX = 'IMATRIX';
+var IBOOLEAN = 'IBOOLEAN';
+var ISTRING = 'ISTRING';
+var IMIXEDTYPE = 'IMIXEDTYPE';
+var IUNDEFINED = 'IUNDEFINED';
+var ICONDITIONAL = 'ICONDITIONAL';
+var ICASES = 'ICASES';
+
+var STRUE = "true";
+var SFALSE = "false";
 
 function Instruction4MathJS(type, value) {
   this.type = type;
   this.value = (value !== undefined && value !== null) ? value : 0;
+}
+
+Instruction4MathJS.prototype.setBooleanString = function (pTrue,pFalse) {
+  STRUE  = pTrue;
+  SFALSE = pFalse;
 }
 
 Instruction4MathJS.prototype.toString = function () {
@@ -2032,6 +3253,8 @@ Instruction4MathJS.prototype.toString = function () {
       return 'DEF ' + this.value;
     case IARRAY:
       return 'ARRAY ' + this.value;
+    case IMATRIX:
+      return 'MATRIX ' + this.value;
     case IMEMBER:
       return '.' + this.value;
     default:
@@ -2050,10 +3273,7 @@ function binaryInstruction(value) {
 function ternaryInstruction(value) {
   return new Instruction4MathJS(IOP3, value);
 }
-//END - src/instruction.js
-//BEGIN - src/outro.js
 
   this.Parser = Parser4MathJS;
 
-}; // End of definition of Math4JS
-//END - src/outro.js
+}; 
