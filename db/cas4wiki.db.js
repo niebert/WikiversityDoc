@@ -128,7 +128,7 @@ vDataJSON.db['initdb'] = {
         },
         {
             "cmdtitle": "Gradients and derivatives",
-            "cmd": "d(x^2)\n# gradients are derivatives on vectors\nr=sqrt(x^2+y^2)\nd(r,[x,y])",
+            "cmd": "d(x^2)\nr(x,y):=sqrt(x^2+y^2)\nd(r(x,y),[x,y])",
             "result4cmd": ""
         },
         {
