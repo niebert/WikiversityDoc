@@ -1,4 +1,4 @@
-vDataJSON.initdb ={
+vDataJSON.db['initdb'] ={
     "castype": "maxima",
     "title4cas": "Computer Algebra System",
     "title4commands": "Commands",
