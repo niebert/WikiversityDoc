@@ -2,6 +2,9 @@
 This is a repository that contains WebApps to support the work with Wikiversity learning resources
 <h3><a href="https://niebert.github.io/WikiversityDoc/index.html" target="_blank">Demo: CAS4Wiki</a></h3>
 See also <a href="https://en.wikiversity.org/wiki/CAS4Wiki" target="_blank">Wikiversity Learning Resource about CAS4Wiki</a>.
+<h3><a href="https://niebert.github.io/WikiversityDoc/cas4wiki_plotcommands.html" target="_blank">CAS4Wiki Plot Commands</a></h3>
+<h3><a href="https://niebert.github.io/WikiversityDoc/cas4wiki_fuzzymembership.html" target="_blank">CAS4Wiki Fuzzy Membership Function</a></h3>
+See also <a href="https://de.wikiversity.org/wiki/Fuzzylogik" target="_blank">German Wikiversity Learning Resource Fuzzy-Logik/a>.
 
 ## CAS4Wiki - Webbased Computer Algebra System 
 The <a href="https://niebert.github.io/WikiversityDoc/cas4wiki.html" target="_blank">CAS4Wiki Demo</a> is based on
