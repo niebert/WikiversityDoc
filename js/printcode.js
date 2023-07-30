@@ -28,6 +28,7 @@
             console.error("ERROR: print node in DOM for ID  'print_body' was undefinde");
           }
           print_win.focus();
+          var  printTimeout = setTimeout(print_win.print, 1000);
           //print_win.print();
           //print_win.close();
           //print_win.close();
